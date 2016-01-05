@@ -1,5 +1,5 @@
 development:
-  sessions:
+  clients:
     default:
       database: weblinc_upgrade_development
       hosts:
@@ -7,7 +7,7 @@ development:
   options:
     use_activesupport_time_zone: false
 test:
-  sessions:
+  clients:
     default:
       database: weblinc_upgrade_test
       hosts:
