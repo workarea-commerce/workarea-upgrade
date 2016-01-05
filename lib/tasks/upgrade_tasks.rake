@@ -1,8 +1,9 @@
 namespace :weblinc do
   namespace :upgrade do
-    desc 'Migrate the database'
-    task :migrate, [:from, :to] do
-      # Task goes here
+    desc 'Migrate the database from previous version'
+    task :migrate do
+      migration = Weblinc::Upgrade::Migration.lookup(Weblinc::VERSION::MAJOR)
+      migration.run!
     end
 
     desc 'Read the release notes for the current version'
