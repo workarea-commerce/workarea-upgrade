@@ -6,6 +6,9 @@ module Weblinc
           puts "Migrating category data..."
           migrate_categories
 
+          puts "Migrating product data..."
+          migrate_products
+
           puts "Migrate navigation data..."
           migrate_navigation
 
@@ -23,6 +26,52 @@ module Weblinc
             doc = category_doc.except('downcased_name', 'excluded_facets')
             categories.insert_one(doc)
           end
+        end
+
+        def migrate_products
+          products = Catalog::Product.collection
+          categories_to_save = []
+          packaged_product_data = {}
+
+          products.find.each do |product_doc|
+            if product_doc['packaged_product_ids'].present?
+              packaged_product_data[product_doc['_id']] = product_doc['packaged_product_ids']
+            end
+
+            next unless product_doc['categorizations'].present?
+
+            product_doc['categorizations'].each do |categorization_doc|
+              category = if existing = categories_to_save.detect { |c| c.id.to_s == categorization_doc['category_id'].to_s }
+                           existing
+                         else
+                           Catalog::Category.find(categorization_doc['category_id'])
+                           categories_to_save << category
+                         end
+
+              if categorization_doc['position'].present?
+                category.product_ids.insert(
+                  categorization_doc['position'],
+                  product_doc['_id']
+                )
+              else
+                category.product_ids.push(product_doc['_id'])
+              end
+            end
+          end
+
+          if packaged_product_data.present?
+            warn "Unsetting packaged_product_ids on all products. Please see packaged_products.json for a dump of the data"
+            File.open('packaged_products.json', 'w') do |file|
+              file.write(packaged_product_data.to_json)
+            end
+          end
+
+          products.update_many(
+            {},
+            '$unset' => { categorizations: '', packaged_product_ids: '' }
+          )
+
+          categories_to_save.each(&:save!)
         end
 
         def migrate_navigation
