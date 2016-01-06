@@ -6,6 +6,9 @@ module Weblinc
           puts "Migrating category data..."
           migrate_categories
 
+          puts "Migrate navigation data..."
+          migrate_navigation
+
           puts "Migrating user data..."
           migrate_users
         end
@@ -20,6 +23,15 @@ module Weblinc
             doc = category_doc.except('downcased_name', 'excluded_facets')
             categories.insert_one(doc)
           end
+        end
+
+        def migrate_navigation
+          Navigation::Link
+            .collection
+            .update_many(
+              { linkable_type: 'Weblinc::Catalog::SmartCategory' },
+              { '$set' => { linkable_type: 'Weblinc::Catalog::Category' } }
+            )
         end
 
         def migrate_users
