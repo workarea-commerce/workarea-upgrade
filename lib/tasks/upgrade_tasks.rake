@@ -1,9 +1,11 @@
 namespace :weblinc do
   namespace :upgrade do
     desc 'Migrate the database from previous version'
-    task :migrate do
+    task migrate: :environment do
       migration = Weblinc::Upgrade::Migration.lookup(Weblinc::VERSION::MAJOR)
       migration.run!
+
+      Rake::Task['weblinc:search_index:all'].invoke
     end
 
     desc 'Read the release notes for the current version'
