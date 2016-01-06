@@ -3,8 +3,23 @@ module Weblinc
     class Migration
       class V2 < Migration
         def perform
+          puts "Migrating category data..."
+          migrate_categories
+
           puts "Migrating user data..."
           migrate_users
+        end
+
+        def migrate_categories
+          categories = Catalog::Category.collection
+          smart_categories = Mongoid::Clients.default.collections.detect do |collection|
+            collection.namespace == 'weblinc_teststore_development.weblinc_catalog_smart_categories'
+          end
+
+          smart_categories.find.each do |category_doc|
+            doc = category_doc.except('downcased_name', 'excluded_facets')
+            categories.insert_one(doc)
+          end
         end
 
         def migrate_users
