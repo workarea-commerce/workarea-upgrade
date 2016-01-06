@@ -32,6 +32,18 @@ module Weblinc
             doc = category_doc.except('downcased_name', 'excluded_facets')
             categories.insert_one(doc)
           end
+
+          if excluded_facets.present?
+            warn "Unsetting excluded_facets on all categories. Please see category_excluded_facets.json for a dump of the data"
+            File.open('category_excluded_facets.json', 'w') do |file|
+              file.write(excluded_facets.to_json)
+            end
+          end
+
+          categories.update_many(
+            {},
+            { '$unset' => { downcased_name: '', excluded_facets: '' } }
+          )
         end
 
         def migrate_products
@@ -102,6 +114,10 @@ module Weblinc
               { contentable_type: 'Weblinc::Catalog::SmartCategory' },
               { '$set' => { contentable_type: 'Weblinc::Catalog::Category' } }
             )
+
+          Content
+            .collection
+            .update_many({}, { '$unset' => { downcased_name: '' } })
         end
 
         def migrate_orders
