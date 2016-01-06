@@ -108,7 +108,8 @@ module Weblinc
               )
             end
 
-            users.find(_id: user_doc['_id']).update_one(
+            users.update_one(
+              { _id: user_doc['_id'] },
               '$unset' => { passwords: '', csr: '' },
               '$set' => {
                 password_digest: current_password['password_digest'],
