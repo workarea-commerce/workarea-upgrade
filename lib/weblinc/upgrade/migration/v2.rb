@@ -24,6 +24,14 @@ module Weblinc
 
         def migrate_categories
           categories = Catalog::Category.collection
+          excluded_facets = {}
+
+          categories.find.each do |category_doc|
+            if category_doc['excluded_facets'].present?
+              excluded_facets[category_doc['_id']] = category_doc['excluded_facets']
+            end
+          end
+
           smart_categories = Mongoid::Clients.default.collections.detect do |collection|
             collection.namespace == 'weblinc_teststore_development.weblinc_catalog_smart_categories'
           end
