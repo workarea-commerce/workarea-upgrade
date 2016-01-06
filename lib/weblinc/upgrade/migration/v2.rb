@@ -29,6 +29,10 @@ module Weblinc
         end
 
         def migrate_products
+          I18n.for_each_locale do |locale|
+            Search::Repositories::ProductBrowse.new.reset!
+          end
+
           products = Catalog::Product.collection
           categories_to_save = []
           packaged_product_data = {}
@@ -41,11 +45,13 @@ module Weblinc
             next unless product_doc['categorizations'].present?
 
             product_doc['categorizations'].each do |categorization_doc|
-              category = if existing = categories_to_save.detect { |c| c.id.to_s == categorization_doc['category_id'].to_s }
+              existing = categories_to_save.detect { |c| c.id.to_s == categorization_doc['category_id'].to_s }
+
+              category = if existing
                            existing
                          else
-                           Catalog::Category.find(categorization_doc['category_id'])
-                           categories_to_save << category
+                           categories_to_save << Catalog::Category.find(categorization_doc['category_id'])
+                           categories_to_save.last
                          end
 
               if categorization_doc['position'].present?
