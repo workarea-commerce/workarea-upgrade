@@ -15,6 +15,9 @@ module Weblinc
           puts "Migrating content data..."
           migrate_content
 
+          puts "Migrating order data..."
+          migrate_orders
+
           puts "Migrating user data..."
           migrate_users
         end
@@ -99,6 +102,43 @@ module Weblinc
               { contentable_type: 'Weblinc::Catalog::SmartCategory' },
               { '$set' => { contentable_type: 'Weblinc::Catalog::Category' } }
             )
+        end
+
+        def migrate_orders
+          orders = Order.collection
+          segment_data = {}
+
+          orders.find.each do |order_doc|
+            if order_doc['segment_ids'].present?
+              segment_data[order_doc['number']] = order_doc['segment_ids']
+            end
+          end
+
+          if segment_data.present?
+            warn "Unsetting segment_ids on all orders. Please see order_segments.json for a dump of the data"
+            File.open('order_segments.json', 'w') do |file|
+              file.write(segment_data.to_json)
+            end
+          end
+
+          orders.update_many({}, '$unset' => { segment_ids: '' })
+
+          # 100 hardcoded because there's no way to remove these elements from
+          # every item (limitation of Mongodb).
+          #
+          # 100 was used because it's hard to imagine a cart with more than 100
+          # items.
+          #
+          100.times do |i|
+            orders.update_many(
+              { "items.#{i}" => { '$exists' => true } },
+              '$unset' => {
+                "items.#{i}.product_details" => '',
+                "items.#{i}.sku_details" => '',
+                "items.#{i}.digital" => ''
+              }
+            )
+          end
         end
 
         def migrate_users
