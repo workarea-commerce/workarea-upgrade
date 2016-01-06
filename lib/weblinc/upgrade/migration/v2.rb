@@ -9,8 +9,11 @@ module Weblinc
           puts "Migrating product data..."
           migrate_products
 
-          puts "Migrate navigation data..."
+          puts "Migrating navigation data..."
           migrate_navigation
+
+          puts "Migrating content data..."
+          migrate_content
 
           puts "Migrating user data..."
           migrate_users
@@ -86,6 +89,15 @@ module Weblinc
             .update_many(
               { linkable_type: 'Weblinc::Catalog::SmartCategory' },
               { '$set' => { linkable_type: 'Weblinc::Catalog::Category' } }
+            )
+        end
+
+        def migrate_content
+          Content
+            .collection
+            .update_many(
+              { contentable_type: 'Weblinc::Catalog::SmartCategory' },
+              { '$set' => { contentable_type: 'Weblinc::Catalog::Category' } }
             )
         end
 
