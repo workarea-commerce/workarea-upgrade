@@ -143,6 +143,7 @@ module Weblinc
 
         def migrate_users
           users = Weblinc::User.collection
+          users.indexes.drop_one('token_1')
 
           users.find.each do |user_doc|
             passwords = user_doc['passwords'].sort do |a, b|
@@ -162,7 +163,7 @@ module Weblinc
 
             users.update_one(
               { _id: user_doc['_id'] },
-              '$unset' => { passwords: '', csr: '' },
+              '$unset' => { passwords: '', csr: '', token: '' },
               '$set' => {
                 password_digest: current_password['password_digest'],
                 password_changed_at: current_password['created_at'],
