@@ -18,6 +18,9 @@ module Weblinc
           puts "Migrating order data..."
           migrate_orders
 
+          puts "Migrating discount data..."
+          migrate_discounts
+
           puts "Migrating user data..."
           migrate_users
         end
@@ -162,6 +165,48 @@ module Weblinc
                 "items.#{i}.digital" => ''
               }
             )
+          end
+        end
+
+        def migrate_discounts
+          new_discounts = Weblinc::Pricing::Discount.collection
+          compatibility_data = {}
+
+          discounts = Mongoid::Clients.default.collections.detect do |collection|
+            collection.namespace.end_with?('weblinc_pricing_discounts_discounts')
+          end
+
+          discounts.find.each do |discount_doc|
+            discount_doc['_type'] = discount_doc['_type'].gsub('Discounts', 'Discount')
+
+            if discount_doc['incompatible_discount_ids'].present?
+              compatibility_data[discount_doc['_id']] = discount_doc['incompatible_discount_ids']
+            end
+
+            new_discounts.insert_one(discount_doc.except('incompatible_discount_ids'))
+          end
+
+          if compatibility_data.present?
+            warn "Unsetting incompatible_discount_ids on all discounts. All discounts are incompatible by default now. Please see incompatible_discount_ids.json for a dump of the data"
+            File.open('incompatible_discount_ids.json', 'w') do |file|
+              file.write(compatibility_data.to_json)
+            end
+          end
+
+          promo_codes = Mongoid::Clients.default.collections.detect do |collection|
+            collection.namespace.end_with?('weblinc_pricing_discounts_generated_promo_codes')
+          end
+
+          promo_codes.find.each do |promo_code_doc|
+            Weblinc::Pricing::Discount::GeneratedPromoCode.collection.insert_one(promo_code_doc)
+          end
+
+          redemptions = Mongoid::Clients.default.collections.detect do |collection|
+            collection.namespace.end_with?('weblinc_pricing_discounts_redemptions')
+          end
+
+          redemptions.find.each do |redemption_doc|
+            Weblinc::Pricing::Discount::Redemption.collection.insert_one(redemption_doc)
           end
         end
 
