@@ -214,6 +214,8 @@ module Weblinc
           users = Weblinc::User.collection
           users.indexes.drop_one('token_1')
 
+          warn "User permissions have changed. Former permissions data still available in the `weblinc_user_authorizations` collection. You will need to manually migrate those. Please see the v2.0 release notes at http://guides.weblinc.com/release-notes.html"
+
           users.find.each do |user_doc|
             passwords = user_doc['passwords'].sort do |a, b|
               a['created_at'] <=> b['created_at']
