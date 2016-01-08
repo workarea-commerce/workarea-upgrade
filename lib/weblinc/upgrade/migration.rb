@@ -20,7 +20,16 @@ module Weblinc
 
       def run!
         assert_not_run!
-        perform
+
+        begin
+          perform
+          self.success = true
+        rescue Exception => e
+          self.success = false
+          self.error = e
+        ensure
+          save!
+        end
       end
 
       def perform

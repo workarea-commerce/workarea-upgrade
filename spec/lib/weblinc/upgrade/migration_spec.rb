@@ -22,6 +22,18 @@ module Weblinc
           expect { instance.run! }
             .to raise_error(Migration::MigrationAlreadyRun)
         end
+
+        it 'saves a record of a successful run' do
+          allow_any_instance_of(Migration)
+            .to receive(:perform)
+            .and_return(true)
+
+          migration = Migration.new
+          migration.run!
+
+          expect(migration).to be_persisted
+          expect(migration.success).to eq(true)
+        end
       end
     end
   end
