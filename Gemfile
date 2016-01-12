@@ -15,6 +15,7 @@ gemspec
 
 
 gem 'weblinc', source: 'https://gems.weblinc.com'
+gem 'byebug'
 group :test do
   gem 'weblinc-testing', source: 'https://gems.weblinc.com'
 end
