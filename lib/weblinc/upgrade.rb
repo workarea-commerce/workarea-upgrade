@@ -17,3 +17,4 @@ require 'weblinc/upgrade/migration'
 require 'weblinc/upgrade/migration/v2'
 
 require 'weblinc/upgrade/diff'
+require 'weblinc/upgrade/report_card'

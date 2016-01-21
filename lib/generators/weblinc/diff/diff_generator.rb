@@ -29,6 +29,10 @@ module Weblinc
         export(diff.against_project, 'project-specific', 'diff')
       end
 
+      def print_status(indicator, type, color, files)
+        say_status indicator, "#{files.count} have been #{type} from weblinc", color.to_sym
+      end
+
       private
 
       def determine_export_path
@@ -47,10 +51,6 @@ module Weblinc
 
           puts
         end
-      end
-
-      def print_status(indicator, type, color, files)
-        say_status indicator, "#{files.count} have been #{type} from weblinc", color.to_sym
       end
 
       def export(files, type, ext)
