@@ -4,7 +4,6 @@ require 'weblinc/admin'
 
 require 'diffy'
 require 'fileutils'
-require 'byebug'
 
 require 'weblinc/upgrade/engine'
 
