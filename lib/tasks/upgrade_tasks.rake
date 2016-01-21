@@ -13,10 +13,5 @@ namespace :weblinc do
     task :release_notes do
       # Task goes here
     end
-
-    desc 'Read a diff for files customized in this application'
-    task :diff do
-      # Task goes here
-    end
   end
 end
