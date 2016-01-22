@@ -3,6 +3,8 @@ module Weblinc
     class Diff
       class DiffGemNotFound < StandardError; end
 
+      attr_reader :from_files
+
       def full
         @common_files.map do |file|
           diff = diff_file(file)
@@ -123,12 +125,12 @@ module Weblinc
 
       def filesystem_for(path)
         Dir.glob(File.join(path, '**', '*'))
-           .reject{ |p| blacklisted?(p) }
+           .select { |p| whitelisted?(p) }
            .map{ |p| { full_path: p, relative_path: p.gsub(path, '') } }
       end
 
-      def blacklisted?(file)
-        File.directory?(file) || file.include?('/tmp/')
+      def whitelisted?(file)
+        File.directory?(file) || file.include?('app') || file.include?('lib')
       end
 
       def gem_install_path

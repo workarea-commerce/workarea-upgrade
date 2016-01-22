@@ -37,7 +37,21 @@ namespace :weblinc do
       generator.print_status('>>>', 'overridden', 'yellow', diff.overridden_files)
       generator.print_status('>>>', 'decorated', 'yellow', diff.decorated_files)
 
-      puts report_card.to_s
+      puts
+      puts 'Report Card'
+      puts '-----------'
+      report_card.results.each do |category, grade|
+        color = if grade.in?(%w(A B))
+                  :green
+                elsif grade == 'F'
+                  :red
+                else
+                  :yellow
+                end
+
+        generator.say_status grade, category, color
+      end
+      puts
     end
 
     desc 'Read the release notes for the current version'
