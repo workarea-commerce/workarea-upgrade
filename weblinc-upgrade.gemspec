@@ -12,10 +12,12 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://www.weblinc.com'
   s.summary     = 'Weblinc upgrade tools'
   s.description = 'Upgrade tools for the Weblinc ecommerce system'
-  s.files = `git ls-files`.split("\n")
+  s.files       = `git ls-files`.split("\n")
+  s.bindir      = 'exe'
+  s.executable  = 'weblinc_upgrade'
 
   s.required_ruby_version = '>= 2.0.0'
-  s.add_dependency 'weblinc', '>= 0.10.0'
 
+  s.add_dependency 'weblinc', '>= 0.10.0'
   s.add_dependency 'diffy', '~> 3.1.0'
 end

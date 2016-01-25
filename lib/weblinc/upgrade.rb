@@ -2,6 +2,7 @@ require 'weblinc'
 require 'weblinc/store_front'
 require 'weblinc/admin'
 
+require 'thor'
 require 'diffy'
 require 'fileutils'
 
