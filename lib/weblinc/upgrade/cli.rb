@@ -2,23 +2,31 @@ module Weblinc
   module Upgrade
     class CLI < Thor
       desc 'diff TO_VERSION', 'Print a diff for upgrading to TO_VERSION'
-      option :removed, type: :boolean, aliases: :r
-      option :added, type: :boolean, aliases: :a
       option :full, type: :boolean, aliases: :f
       option :context, type: :numeric, aliases: :c
       def diff(to)
         to_path = find_to_path!(to)
         diff = Diff.new(from_path, to_path, context: options[:context])
 
-        if options[:removed]
-          puts diff.removed.join("\n")
-        elsif options[:added]
-          puts diff.added.join("\n")
-        elsif options[:full]
+        if options[:full]
           puts diff.all.join
         else
           puts diff.for_current_app.join
         end
+      end
+
+      desc 'show_added_files TO_VERSION', 'Print a list of added files in TO_VERSION'
+      def show_added_files(to)
+        to_path = find_to_path!(to)
+        diff = Diff.new(from_path, to_path)
+        puts diff.added.join("\n")
+      end
+
+      desc 'show_removed_files TO_VERSION', 'Print a list of removed files in TO_VERSION'
+      def show_removed_files(to)
+        to_path = find_to_path!(to)
+        diff = Diff.new(from_path, to_path)
+        puts diff.removed.join("\n")
       end
 
       desc 'report TO_VERSION', 'Print a report on upgrading to TO_VERSION'
