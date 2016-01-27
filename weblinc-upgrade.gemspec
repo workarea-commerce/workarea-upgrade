@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'weblinc', '>= 0.10.0'
   s.add_dependency 'diffy', '~> 3.1.0'
+  s.add_dependency 'bundler'
 end
