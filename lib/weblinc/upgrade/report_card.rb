@@ -19,13 +19,7 @@ module Weblinc
       end
 
       def customized_files
-        @diff.decorated_files + @diff.overridden_files
-      end
-
-      # If a file was decorated or overridden and removed, this is the
-      # biggest pain point.
-      def worst_files
-        customized_files | @diff.removed_files
+        @diff.decorated + @diff.overridden_files
       end
 
       def results
@@ -35,14 +29,35 @@ module Weblinc
         end
       end
 
+      def customized_percents
+        @customized_percents ||= CATEGORIES.inject({}) do |memo, category|
+          total = @diff.for_current_app.select { |f| f.include?(category) }.count
+          total_count = @diff.all.select { |f| f.include?(category) }.count
+          percent_customized = (total / total_count.to_f) * 100
+
+          memo[category] = percent_customized.round
+          memo
+        end
+      end
+
+      # If a file was decorated or overridden and removed, this is the
+      # biggest pain point.
+      def worst_files
+        @worst_files ||= CATEGORIES.inject({}) do |memo, category|
+          memo[category] = customized_files_now_missing
+                             .select { |f| f.include?(category) }
+                             .count
+
+          memo
+        end
+      end
+
+
       def calculate_grade(category)
-        total = customized_files.select { |f| f.include?(category) }.count
-        return 'A' if total <= 2
+        percent_customized = customized_percents[category]
+        return 'A' if percent_customized < 5
 
-        total_count = diff.from_files.select { |f| f.include?(category) }.count
-        percent_customized = (total / total_count.to_f) * 100
-
-        score = 0
+        score = worst_files[category]
         score += if percent_customized.between?(0, 10)
                    1
                  elsif percent_customized.between?(11, 25)
@@ -55,19 +70,23 @@ module Weblinc
                    30
                  end
 
-        score += worst_files.select { |f| f.include?(category) }.count
-
         if score.between?(0, 9)
           'A'
-        elsif score.between?(10, 19)
+        elsif score.between?(10, 24)
           'B'
-        elsif score.between?(20, 29)
+        elsif score.between?(25, 34)
           'C'
-        elsif score.between?(30, 39)
+        elsif score.between?(35, 50)
           'D'
         else
           'F'
         end
+      end
+
+      private
+
+      def customized_files_now_missing
+        @diff.for_current_app | @diff.removed
       end
     end
   end

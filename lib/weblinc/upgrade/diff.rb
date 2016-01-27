@@ -12,7 +12,7 @@ module Weblinc
       end
 
       def all
-        from_files.reduce([]) do |results, from_file|
+        @all ||= from_files.reduce([]) do |results, from_file|
           if to_file = find_to_file(from_file.relative_path)
             diff = diff_files(from_file, to_file)
             results << diff unless diff.blank?
@@ -23,7 +23,7 @@ module Weblinc
       end
 
       def added
-        to_files.reduce([]) do |results, to_file|
+        @added ||= to_files.reduce([]) do |results, to_file|
           from_file = find_from_file(to_file.relative_path)
           results << to_file.relative_path if from_file.blank?
           results
@@ -31,7 +31,7 @@ module Weblinc
       end
 
       def removed
-        from_files.reduce([]) do |results, from_file|
+        @removed ||= from_files.reduce([]) do |results, from_file|
           to_file = find_to_file(from_file.relative_path)
           results << from_file.relative_path if to_file.blank?
           results
@@ -39,18 +39,16 @@ module Weblinc
       end
 
       def overridden
-        find_app_diff(CurrentApp.files)
+        @overridden ||= find_app_diff(CurrentApp.files)
       end
 
       def decorated
-        find_app_diff(CurrentApp.decorators)
+        @decorated ||= find_app_diff(CurrentApp.decorators)
       end
 
       def for_current_app
-        overridden + decorated
+        @for_current_app ||= overridden + decorated
       end
-
-      private
 
       def from_files
         @from_files ||= WeblincFile.find_from_gems(@from_root, @from_version)
@@ -59,6 +57,8 @@ module Weblinc
       def to_files
         @to_files ||= WeblincFile.find_from_gems(@to_root, @to_version)
       end
+
+      private
 
       def diff_files(from_file, to_file)
         Diffy::Diff.new(

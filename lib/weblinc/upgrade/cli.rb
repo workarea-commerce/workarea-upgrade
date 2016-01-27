@@ -29,30 +29,60 @@ module Weblinc
 
         puts 'Diff Statistics'
         puts '---------------'
-        say_status('>>>', "#{pluralize(diff.all.length, 'file')} changed in weblinc", :yellow)
-        say_status('---', "#{pluralize(diff.removed.length, 'file')} removed from weblinc", :red)
-        say_status('+++', "#{pluralize(diff.added.length, 'file')} added to weblinc", :green)
-        say_status('>>>', "#{pluralize(diff.overridden.length, 'overridden file')} in this app changed", :yellow)
-        say_status('>>>', "#{pluralize(diff.decorated.length, 'decorated file')} in this app changed", :yellow)
+        say_status '>>>', "#{pluralize(diff.all.length, 'file')} changed in weblinc", :yellow
+        say_status '---', "#{pluralize(diff.removed.length, 'file')} removed from weblinc", :red
+        say_status '+++', "#{pluralize(diff.added.length, 'file')} added to weblinc", :green
+        say_status '>>>', "#{pluralize(diff.overridden.length, 'overridden file')} in this app changed", :yellow
+        say_status '>>>', "#{pluralize(diff.decorated.length, 'decorated file')} in this app changed", :yellow
 
-        #puts
-        #puts 'Report Card'
-        #puts '-----------'
-        #report_card.results.each do |category, grade|
-          #color = if grade.in?(%w(A B))
-                    #:green
-                  #elsif grade == 'F'
-                    #:red
-                  #else
-                    #:yellow
-                  #end
+        puts
+        puts 'Report Card'
+        puts '-----------'
+        report_card.results.each do |category, grade|
+          color = if grade.in?(%w(A B))
+                    :green
+                  elsif grade == 'F'
+                    :red
+                  else
+                    :yellow
+                  end
 
-          #generator.say_status grade, category, color
-        #end
-        #puts
+          say_status grade, category, color
+        end
+
+        puts 'Why?'
+        puts '----'
+        report_card.results.each do |category, grade|
+          say_status category, "#{report_card.customized_percents[category]}% of changes are customized"
+        end
+        puts
+        report_card.results.each do |category, grade|
+          say_status category, "#{report_card.worst_files[category]} customized files have been moved or removed"
+        end
+
+        puts
+        puts 'Where do I go from here?'
+        puts '------------------------'
+        say_status 'Check out the release notes:', calculate_release_notes_url(to), :white
+        say_status 'View a diff for your project:', "weblinc_upgrade diff #{to}", :white
+        say_status 'Update your gem file:', "gem 'weblinc', '#{to}'", :white
+        say_status 'Migrate the database:', "rake weblinc:upgrade:migrate", :white
+        puts
       end
 
       private
+
+      def calculate_release_notes_url(version)
+        version_pieces = version.split('.').map(&:to_i)
+        major = version_pieces.first
+
+        if major < 2
+          minor = version_pieces.second
+          "http://guides.weblinc.com/#{major}.#{minor}/release-notes.html"
+        else
+          "http://guides.weblinc.com/#{major}/release-notes.html"
+        end
+      end
 
       def from_path
         Bundler.load.specs.find { |s| s.name == 'weblinc' }.full_gem_path
