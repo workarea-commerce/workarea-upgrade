@@ -9,7 +9,7 @@ module Weblinc
       def diff(to)
         from_path = Bundler.load.specs.find { |s| s.name == 'weblinc' }.full_gem_path
         to_path = "#{Gem.dir}/gems/weblinc-#{to}"
-        # TODO ensure that path exists
+        validate_installed_gems!(to_path)
 
         diff = Diff.new(from_path, to_path, context: options[:context])
 
@@ -27,6 +27,19 @@ module Weblinc
       desc 'report TO_VERSION', 'Print a report on upgrading to TO_VERSION'
       def report(to)
         puts "report #{to}"
+      end
+
+      private
+
+      def validate_installed_gems!(path)
+        if !File.directory?(path)
+          raise <<-eos.strip_heredoc
+
+            Couldn't find the desired TO_VERSION in installed gems!
+            Looked in #{path}
+            Try `gem install weblinc -v TO_VERSION`.
+          eos
+        end
       end
     end
   end
