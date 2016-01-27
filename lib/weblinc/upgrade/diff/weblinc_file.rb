@@ -26,7 +26,7 @@ module Weblinc
             relative = file.gsub(root, '')
 
             !File.directory?(file) &&
-              !relative.include?('decorators') &&
+              !relative.include?('decorators/') &&
               (relative.include?('app/') || relative.include?('lib/'))
           end
         end
