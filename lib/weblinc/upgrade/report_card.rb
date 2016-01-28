@@ -31,7 +31,7 @@ module Weblinc
           total_count = @diff.all.select { |f| f.include?(category) }.count
           percent_customized = (total / total_count.to_f) * 100
 
-          memo[category] = percent_customized.round
+          memo[category] = percent_customized.nan? ? 0 : percent_customized.round
           memo
         end
       end
