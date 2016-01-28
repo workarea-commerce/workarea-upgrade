@@ -27,9 +27,8 @@ module Weblinc
 
       def customized_percents
         @customized_percents ||= CATEGORIES.inject({}) do |memo, category|
-          total = @diff.for_current_app.select { |f| f.include?(category) }.count
-          total_count = @diff.all.select { |f| f.include?(category) }.count
-          percent_customized = (total / total_count.to_f) * 100
+          total_changes = @diff.all.select { |f| f.include?(category) }.count
+          percent_customized = (customized_totals[category] / total_changes.to_f) * 100
 
           memo[category] = percent_customized.nan? ? 0 : percent_customized.round
           memo
@@ -48,8 +47,17 @@ module Weblinc
         end
       end
 
+      def customized_totals
+        @customized_totals ||= CATEGORIES.inject({}) do |memo, category|
+          memo[category] = @diff.for_current_app.select { |f| f.include?(category) }.count
+          memo
+        end
+      end
 
       def calculate_grade(category)
+        customized_total = customized_totals[category]
+        return 'A' if customized_total < 3
+
         percent_customized = customized_percents[category]
         return 'A' if percent_customized < 5
 
