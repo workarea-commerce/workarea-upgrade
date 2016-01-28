@@ -36,7 +36,7 @@ module Weblinc
       def report(to)
         check_help!(to, 'report')
         to_path = find_to_path!(to)
-        diff = Diff.new(from_path, to_path, context: options[:context])
+        diff = Diff.new(from_path, to_path)
         report_card = Weblinc::Upgrade::ReportCard.new(diff)
 
         puts 'Diff Statistics'
