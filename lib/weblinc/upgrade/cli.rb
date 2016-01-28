@@ -71,6 +71,10 @@ module Weblinc
         end
         puts
         report_card.results.each do |category, grade|
+          say_status category, "#{report_card.customized_totals[category]} customized files have been changed"
+        end
+        puts
+        report_card.results.each do |category, grade|
           say_status category, "#{report_card.worst_files[category]} customized files have been moved or removed"
         end
 
