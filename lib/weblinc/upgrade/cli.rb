@@ -65,7 +65,9 @@ module Weblinc
         puts 'Why?'
         puts '----'
         report_card.results.each do |category, grade|
-          say_status category, "#{report_card.customized_percents[category]}% of changes are customized"
+          customized = report_card.customized_percents[category]
+          total = report_card.changed_totals[category]
+          say_status category, "#{customized}% of #{total} changes are customized"
         end
         puts
         report_card.results.each do |category, grade|
