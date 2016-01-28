@@ -46,6 +46,11 @@ module Weblinc
         @decorated ||= find_app_diff(CurrentApp.decorators)
       end
 
+      def customized_files
+        CurrentApp.files.map(&:relative_path) +
+          CurrentApp.decorators.map(&:relative_path)
+      end
+
       def for_current_app
         @for_current_app ||= overridden + decorated
       end

@@ -27,8 +27,8 @@ module Weblinc
 
       def customized_percents
         @customized_percents ||= CATEGORIES.inject({}) do |memo, category|
-          total_changes = @diff.all.select { |f| f.include?(category) }.count
-          percent_customized = (customized_totals[category] / total_changes.to_f) * 100
+          percent_customized = customized_totals[category] / changed_totals[category].to_f
+          percent_customized *= 100
 
           memo[category] = percent_customized.nan? ? 0 : percent_customized.round
           memo
@@ -47,6 +47,13 @@ module Weblinc
         end
       end
 
+      def changed_totals
+        @changed_totals ||= CATEGORIES.inject({}) do |memo, category|
+          memo[category] = @diff.all.select { |f| f.include?(category) }.count
+          memo
+        end
+      end
+
       def customized_totals
         @customized_totals ||= CATEGORIES.inject({}) do |memo, category|
           memo[category] = @diff.for_current_app.select { |f| f.include?(category) }.count
@@ -56,23 +63,13 @@ module Weblinc
 
       def calculate_grade(category)
         customized_total = customized_totals[category]
-        return 'A' if customized_total < 3
+        return 'A' if customized_total <= 3
 
         percent_customized = customized_percents[category]
         return 'A' if percent_customized < 5
 
         score = worst_files[category]
-        score += if percent_customized.between?(0, 10)
-                   1
-                 elsif percent_customized.between?(11, 25)
-                   5
-                 elsif percent_customized.between?(26, 50)
-                   10
-                 elsif percent_customized.between?(51, 74)
-                   20
-                 else
-                   30
-                 end
+        score += percent_customized
 
         if score.between?(0, 9)
           'A'
@@ -80,7 +77,7 @@ module Weblinc
           'B'
         elsif score.between?(25, 34)
           'C'
-        elsif score.between?(35, 50)
+        elsif score.between?(35, 44)
           'D'
         else
           'F'
@@ -90,7 +87,7 @@ module Weblinc
       private
 
       def customized_files_now_missing
-        @diff.for_current_app | @diff.removed
+        @diff.customized_files & @diff.removed
       end
     end
   end
