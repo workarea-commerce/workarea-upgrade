@@ -73,6 +73,8 @@ module Weblinc
         puts '------------------------'
         say_status 'Check out the release notes:', calculate_release_notes_url(to), :white
         say_status 'View a diff for your project:', "weblinc_upgrade diff #{to}", :white
+        say_status 'View new files in weblinc:', "weblinc_upgrade show_added_files  #{to}", :white
+        say_status 'View removed files in weblinc:', "weblinc_upgrade show_removed_files #{to}", :white
         say_status 'Update your gem file:', "gem 'weblinc', '#{to}'", :white
         say_status 'Migrate the database:', "rake weblinc:upgrade:migrate", :white
         puts
