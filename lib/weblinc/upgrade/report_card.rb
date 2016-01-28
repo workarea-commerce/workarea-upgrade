@@ -18,10 +18,6 @@ module Weblinc
         @diff = diff
       end
 
-      def customized_files
-        @diff.decorated + @diff.overridden_files
-      end
-
       def results
         CATEGORIES.inject({}) do |memo, category|
           memo[category] = calculate_grade(category)
