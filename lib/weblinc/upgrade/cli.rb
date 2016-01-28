@@ -2,17 +2,18 @@ module Weblinc
   module Upgrade
     class CLI < Thor
       desc 'diff TO_VERSION', 'Output a diff for upgrading to TO_VERSION'
+      option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
       option :full, type: :boolean, aliases: :f, desc: 'Output the full diff between the two weblinc verions (not just files customized in this project)'
       option :context, type: :numeric, aliases: :c, desc: 'The number of lines of context that are shown around each change'
-      option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
+      option :format, type: :string, enum: %w(text color html), default: 'color'
       def diff(to)
         check_help!(to, 'diff')
         diff = Diff.new(to, options)
 
         if options[:full]
-          puts diff.all.join
+          handle_diff_output(diff.all.join, options[:format])
         else
-          puts diff.for_current_app.join
+          handle_diff_output(diff.for_current_app.join, options[:format])
         end
       end
 
@@ -117,6 +118,19 @@ module Weblinc
 
       def pluralize(*args)
         ActionController::Base.helpers.pluralize(*args)
+      end
+
+      def handle_diff_output(result, format)
+        if format.to_s == 'html'
+          puts <<-eos
+            <html>
+              <head><style>#{Diffy::CSS}</style></head>
+              <body>#{result}</body>
+            </html>
+          eos
+        else
+          puts result
+        end
       end
     end
   end

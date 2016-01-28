@@ -5,20 +5,18 @@ module Weblinc
 
       def initialize(core_to_version, options)
         @core_to_version = core_to_version
-        @plugins = options[:plugins]
-        @context = options[:context]
+        @options = options
       end
 
       def plugins
-        @plugins.presence || {}
+        @options[:plugins].presence || {}
       end
 
       def gem_diffs
         @gem_diffs ||= gems.map do |gem, to_version|
           from_path = find_from_path!(gem)
           to_path = find_to_path!(gem, to_version)
-
-          GemDiff.new(from_path, to_path, context: @context)
+          GemDiff.new(from_path, to_path, @options)
         end
       end
 

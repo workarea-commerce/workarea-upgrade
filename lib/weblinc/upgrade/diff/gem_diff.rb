@@ -69,7 +69,7 @@ module Weblinc
             source: 'files',
             context: @options[:context].presence || 5,
             include_diff_info: true
-          ).to_s
+          ).to_s(@options[:format].presence || :text)
         end
 
         def find_from_file(relative_path)
