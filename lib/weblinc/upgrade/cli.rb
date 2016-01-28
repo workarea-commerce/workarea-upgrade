@@ -1,10 +1,11 @@
 module Weblinc
   module Upgrade
     class CLI < Thor
-      desc 'diff TO_VERSION', 'Print a diff for upgrading to TO_VERSION'
-      option :full, type: :boolean, aliases: :f
-      option :context, type: :numeric, aliases: :c
+      desc 'diff TO_VERSION', 'Output a diff for upgrading to TO_VERSION'
+      option :full, type: :boolean, aliases: :f, desc: 'Output the full diff between the two weblinc verions (not just files customized in this project)'
+      option :context, type: :numeric, aliases: :c, desc: 'The number of lines of context that are shown around each change'
       def diff(to)
+        check_help!(to, 'diff')
         to_path = find_to_path!(to)
         diff = Diff.new(from_path, to_path, context: options[:context])
 
@@ -15,22 +16,25 @@ module Weblinc
         end
       end
 
-      desc 'show_added_files TO_VERSION', 'Print a list of added files in TO_VERSION'
+      desc 'show_added_files TO_VERSION', 'Output a list of added files in TO_VERSION'
       def show_added_files(to)
+        check_help!(to, 'show_added_files')
         to_path = find_to_path!(to)
         diff = Diff.new(from_path, to_path)
         puts diff.added.join("\n")
       end
 
-      desc 'show_removed_files TO_VERSION', 'Print a list of removed files in TO_VERSION'
+      desc 'show_removed_files TO_VERSION', 'Output a list of removed files in TO_VERSION'
       def show_removed_files(to)
+        check_help!(to, 'show_removed_files')
         to_path = find_to_path!(to)
         diff = Diff.new(from_path, to_path)
         puts diff.removed.join("\n")
       end
 
-      desc 'report TO_VERSION', 'Print a report on upgrading to TO_VERSION'
+      desc 'report TO_VERSION', 'Output a report on upgrading to TO_VERSION'
       def report(to)
+        check_help!(to, 'report')
         to_path = find_to_path!(to)
         diff = Diff.new(from_path, to_path, context: options[:context])
         report_card = Weblinc::Upgrade::ReportCard.new(diff)
@@ -99,6 +103,10 @@ module Weblinc
       end
 
       def find_to_path!(arg)
+        unless arg.to_s =~ /^(\d+\.)(\d+\.)(\d+)$/
+          raise "#{arg} is not a valid version number. Example format: 2.0.3"
+        end
+
         result = "#{Gem.dir}/gems/weblinc-#{arg}"
 
         if !File.directory?(result)
@@ -111,6 +119,13 @@ module Weblinc
         end
 
         result
+      end
+
+      def check_help!(arg, subcommand)
+        if arg.to_s.strip =~ /help/i
+          invoke 'help', [subcommand]
+          exit
+        end
       end
 
       def pluralize(*args)
