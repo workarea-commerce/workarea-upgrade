@@ -18,6 +18,7 @@ require 'weblinc/upgrade/migration'
 require 'weblinc/upgrade/migration/v2'
 
 require 'weblinc/upgrade/diff'
+require 'weblinc/upgrade/diff/gem_diff'
 require 'weblinc/upgrade/diff/weblinc_file'
 require 'weblinc/upgrade/diff/current_app'
 

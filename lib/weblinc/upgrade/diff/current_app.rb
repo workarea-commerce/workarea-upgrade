@@ -3,9 +3,7 @@ module Weblinc
     class Diff
       module CurrentApp
         def self.files
-          @current ||= WeblincFile.find_files(Dir.pwd).map do |file|
-            WeblincFile.new(Dir.pwd, file.gsub("#{Dir.pwd}/", ''))
-          end
+          @files ||= WeblincFile.find_files(Dir.pwd)
         end
 
         def self.decorators

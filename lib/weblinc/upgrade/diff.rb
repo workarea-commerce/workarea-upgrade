@@ -1,100 +1,71 @@
 module Weblinc
   module Upgrade
     class Diff
-      def initialize(from_path, to_path, options = {})
-        @from_root = from_path.split('/')[0..-2].join('/')
-        @to_root = to_path.split('/')[0..-2].join('/')
+      CORE_GEM_NAMES = %w(weblinc-core weblinc-store_front weblinc-admin)
 
-        @from_version = from_path.split('-').last
-        @to_version = to_path.split('-').last
-
-        @options = options
+      def initialize(core_to_version, options)
+        @core_to_version = core_to_version
+        @plugins = options[:plugins]
+        @context = options[:context]
       end
 
-      def all
-        @all ||= from_files.reduce([]) do |results, from_file|
-          if to_file = find_to_file(from_file.relative_path)
-            diff = diff_files(from_file, to_file)
-            results << diff unless diff.blank?
-          end
+      def plugins
+        @plugins.presence || {}
+      end
 
-          results
+      def gem_diffs
+        @gem_diffs ||= gems.map do |gem, to_version|
+          from_path = find_from_path!(gem)
+          to_path = find_to_path!(gem, to_version)
+
+          GemDiff.new(from_path, to_path, context: @context)
         end
       end
 
-      def added
-        @added ||= to_files.reduce([]) do |results, to_file|
-          from_file = find_from_file(to_file.relative_path)
-          results << to_file.relative_path if from_file.blank?
-          results
+      %w(
+        all
+        for_current_app
+        added
+        removed
+        overridden
+        decorated
+        customized_files
+      ).each do |method|
+        define_method method do
+          gem_diffs.map(&method.to_sym).reduce(&:+)
         end
       end
 
-      def removed
-        @removed ||= from_files.reduce([]) do |results, from_file|
-          to_file = find_to_file(from_file.relative_path)
-          results << from_file.relative_path if to_file.blank?
-          results
+      def gems
+        core = CORE_GEM_NAMES.inject({}) do |memo, gem|
+          memo[gem.gsub(/weblinc-/, '')] = @core_to_version
+          memo
         end
+
+        core.merge(plugins)
       end
 
-      def overridden
-        @overridden ||= find_app_diff(CurrentApp.files)
+      def find_from_path!(gem)
+        Bundler.load.specs.find { |s| s.name == "weblinc-#{gem}" }.full_gem_path
       end
 
-      def decorated
-        @decorated ||= find_app_diff(CurrentApp.decorators)
-      end
-
-      def customized_files
-        CurrentApp.files.map(&:relative_path) +
-          CurrentApp.decorators.map(&:relative_path)
-      end
-
-      def for_current_app
-        @for_current_app ||= overridden + decorated
-      end
-
-      def from_files
-        @from_files ||= WeblincFile.find_from_gems(@from_root, @from_version)
-      end
-
-      def to_files
-        @to_files ||= WeblincFile.find_from_gems(@to_root, @to_version)
-      end
-
-      private
-
-      def diff_files(from_file, to_file)
-        Diffy::Diff.new(
-          from_file.absolute_path,
-          to_file.absolute_path,
-          source: 'files',
-          context: @options[:context].presence || 5,
-          include_diff_info: true
-        ).to_s
-      end
-
-      def find_from_file(relative_path)
-        from_files.detect { |file| file.relative_path == relative_path }
-      end
-
-      def find_to_file(relative_path)
-        to_files.detect { |file| file.relative_path == relative_path }
-      end
-
-      def find_app_diff(files)
-        files.reduce([]) do |results, decorated_file|
-          from_file = find_from_file(decorated_file.relative_path)
-          to_file = find_to_file(decorated_file.relative_path)
-
-          if from_file.present? && to_file.present?
-            diff = diff_files(from_file, to_file)
-            results << diff unless diff.blank?
-          end
-
-          results
+      def find_to_path!(gem, version)
+        unless version.to_s =~ /^(\d+\.)(\d+\.)(\d+)$/
+          raise "#{version} is not a valid version number. Example format: 2.0.3"
         end
+
+        result = "#{Gem.dir}/gems/weblinc-#{gem}-#{version}"
+
+        if !File.directory?(result)
+          raise <<-eos.strip_heredoc
+
+            Couldn't find weblinc-#{gem} v#{version} in installed gems!
+            Looked in #{result}
+            Try `gem install weblinc-#{gem} -v #{version}`.
+          eos
+        end
+
+        result
       end
     end
   end

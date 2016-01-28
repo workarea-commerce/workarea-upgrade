@@ -4,10 +4,10 @@ module Weblinc
       desc 'diff TO_VERSION', 'Output a diff for upgrading to TO_VERSION'
       option :full, type: :boolean, aliases: :f, desc: 'Output the full diff between the two weblinc verions (not just files customized in this project)'
       option :context, type: :numeric, aliases: :c, desc: 'The number of lines of context that are shown around each change'
+      option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
       def diff(to)
         check_help!(to, 'diff')
-        to_path = find_to_path!(to)
-        diff = Diff.new(from_path, to_path, context: options[:context])
+        diff = Diff.new(to, options)
 
         if options[:full]
           puts diff.all.join
@@ -17,26 +17,26 @@ module Weblinc
       end
 
       desc 'show_added_files TO_VERSION', 'Output a list of added files in TO_VERSION'
+      option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
       def show_added_files(to)
         check_help!(to, 'show_added_files')
-        to_path = find_to_path!(to)
-        diff = Diff.new(from_path, to_path)
+        diff = Diff.new(to, options)
         puts diff.added.join("\n")
       end
 
       desc 'show_removed_files TO_VERSION', 'Output a list of removed files in TO_VERSION'
+      option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
       def show_removed_files(to)
         check_help!(to, 'show_removed_files')
-        to_path = find_to_path!(to)
-        diff = Diff.new(from_path, to_path)
+        diff = Diff.new(to, options)
         puts diff.removed.join("\n")
       end
 
       desc 'report TO_VERSION', 'Output a report on upgrading to TO_VERSION'
+      option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
       def report(to)
         check_help!(to, 'report')
-        to_path = find_to_path!(to)
-        diff = Diff.new(from_path, to_path)
+        diff = Diff.new(to, options)
         report_card = Weblinc::Upgrade::ReportCard.new(diff)
 
         puts 'Diff Statistics'
@@ -106,25 +106,6 @@ module Weblinc
 
       def from_path
         Bundler.load.specs.find { |s| s.name == 'weblinc' }.full_gem_path
-      end
-
-      def find_to_path!(arg)
-        unless arg.to_s =~ /^(\d+\.)(\d+\.)(\d+)$/
-          raise "#{arg} is not a valid version number. Example format: 2.0.3"
-        end
-
-        result = "#{Gem.dir}/gems/weblinc-#{arg}"
-
-        if !File.directory?(result)
-          raise <<-eos.strip_heredoc
-
-            Couldn't find the desired v#{arg} in installed gems!
-            Looked in #{result}
-            Try `gem install weblinc -v #{arg}`.
-          eos
-        end
-
-        result
       end
 
       def check_help!(arg, subcommand)
