@@ -66,17 +66,15 @@ module Weblinc
         puts 'Why?'
         puts '----'
         report_card.results.each do |category, grade|
-          customized = report_card.customized_percents[category]
-          total = report_card.changed_totals[category]
-          say_status category, "#{customized}% of #{total} changed files are customized"
+          say_status category, "#{report_card.customized_totals[category]} overridden/decorated files have been changed"
         end
         puts
         report_card.results.each do |category, grade|
-          say_status category, "#{report_card.customized_totals[category]} customized files have been changed"
+          say_status category, "#{report_card.customized_percents[category]}% of overridden/decorated files have been changed"
         end
         puts
         report_card.results.each do |category, grade|
-          say_status category, "#{report_card.worst_files[category]} customized files have been moved or removed"
+          say_status category, "#{report_card.worst_files[category]} overridden/decorated files have been moved or removed"
         end
 
         puts
