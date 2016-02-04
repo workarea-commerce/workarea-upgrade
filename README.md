@@ -11,7 +11,7 @@ results to show only the changes affecting your application.
 * View lists of files added and removed between versions of WebLinc.
 
 
-1. Install the Plugin
+Step 1: Install the Plugin
 --------------------------------------------------------------------------------
 
 Add the plugin to your application's Gemfile:
@@ -26,7 +26,7 @@ Update your bundle. Use `bundle update` to get the latest version:
     bundle update weblinc-upgrade
 
 
-2. View Help
+Step 2: View Help
 --------------------------------------------------------------------------------
 
 Run `weblinc_upgrade` without arguments to view help:
@@ -40,7 +40,7 @@ Use `help` to get detailed help for a specific command:
     bundle exec weblinc_upgrade help report
 
 
-2. View a Report
+Step 3: View Report & Begin Upgrade
 --------------------------------------------------------------------------------
 
 Start by viewing an upgrade report. The report will summarize the work required
@@ -49,7 +49,7 @@ to upgrade to specific versions of WebLinc and WebLinc plugins.
 The report will suggest next steps for your upgrade.
 
 
-3. Migrate Your Database
+Step 4: Migrate Your Database
 --------------------------------------------------------------------------------
 
 If upgrading to a major or minor version of WebLinc, a database migration may
