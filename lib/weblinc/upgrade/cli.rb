@@ -121,7 +121,7 @@ module Weblinc
         if format.to_s == 'html'
           puts <<-eos
             <html>
-              <head><style>#{Diffy::CSS}</style></head>
+              <head><style>#{Diff::CSS}</style></head>
               <body>#{result}</body>
             </html>
           eos
