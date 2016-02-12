@@ -36,7 +36,7 @@ module Weblinc
           end
 
           smart_categories = Mongoid::Clients.default.collections.detect do |collection|
-            collection.namespace == 'weblinc_teststore_development.weblinc_catalog_smart_categories'
+            collection.namespace.end_with?('weblinc_catalog_smart_categories')
           end
 
           smart_categories.find.each do |category_doc|
