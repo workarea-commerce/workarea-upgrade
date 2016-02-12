@@ -3,9 +3,9 @@ module Weblinc
     class CLI < Thor
       desc 'diff TO_VERSION', 'Output a diff for upgrading to TO_VERSION'
       option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
-      option :full, type: :boolean, aliases: :f, desc: 'Output the full diff between the two weblinc verions (not just files customized in this project)'
+      option :format, type: :string, aliases: :f, enum: %w(text color html), default: 'color'
       option :context, type: :numeric, aliases: :c, desc: 'The number of lines of context that are shown around each change'
-      option :format, type: :string, enum: %w(text color html), default: 'color'
+      option :full, type: :boolean, desc: 'Output the full diff between the two weblinc verions (not just files customized in this project)'
       def diff(to)
         check_help!(to, 'diff')
         diff = Diff.new(to, options)
