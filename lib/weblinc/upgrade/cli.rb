@@ -77,13 +77,15 @@ module Weblinc
           say_status category, "#{report_card.worst_files[category]} overridden/decorated files have been moved or removed"
         end
 
+        args = ARGV[2..-1].join(' ')
+
         puts
         puts 'Where do I go from here?'
         puts '------------------------'
         say_status 'Check out the release notes:', calculate_release_notes_url(to), :white
-        say_status 'View a diff for your project:', "weblinc_upgrade diff #{to}", :white
-        say_status 'View new files in weblinc:', "weblinc_upgrade show_added_files  #{to}", :white
-        say_status 'View removed files in weblinc:', "weblinc_upgrade show_removed_files #{to}", :white
+        say_status 'View a diff for your project:', "weblinc_upgrade diff #{to} #{args}", :white
+        say_status 'View new files in weblinc:', "weblinc_upgrade show_added_files #{to} #{args}", :white
+        say_status 'View removed files in weblinc:', "weblinc_upgrade show_removed_files #{to} #{args}", :white
         say_status 'Update your gem file:', "gem 'weblinc', '#{to}'", :white
         puts
       end
