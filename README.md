@@ -16,9 +16,7 @@ Step 1: Install the Plugin
 
 Add the plugin to your application's Gemfile:
 
-    group :development do
-      gem 'weblinc-upgrade'
-    end
+    gem 'weblinc-upgrade', source: 'https://gems.weblinc.com', group: 'development'
 
 Update your bundle. Use `bundle update` to get the latest version:
 
