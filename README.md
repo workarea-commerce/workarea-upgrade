@@ -37,8 +37,13 @@ Use `help` to get detailed help for a specific command:
     cd path/to/your_app
     bundle exec weblinc_upgrade help report
 
+Step 3: Install Target Gems
+--------------------------------------------------------------------------------
 
-Step 3: View Report & Begin Upgrade
+Install each Gem that you will be upgrading to.
+gem install example-gem -v UPGRADE_VERSION
+
+Step 4: View Report & Begin Upgrade
 --------------------------------------------------------------------------------
 
 Start by viewing an upgrade report. The report will summarize the work required
@@ -47,7 +52,7 @@ to upgrade to specific versions of WebLinc and WebLinc plugins.
 The report will suggest next steps for your upgrade.
 
 
-Step 4: Migrate Your Database
+Step 5: Migrate Your Database
 --------------------------------------------------------------------------------
 
 If upgrading to a major or minor version of WebLinc, a database migration may
