@@ -3,6 +3,7 @@ module Weblinc
     class Migration
       class V2 < Migration
         def perform
+          Weblinc::Publisher.disable
           puts "Migrating category data..."
           migrate_categories
 
@@ -23,6 +24,10 @@ module Weblinc
 
           puts "Migrating user data..."
           migrate_users
+
+          puts 'Migrating fulfillment orders...'
+          migrate_fulfillment
+          Weblinc::Publisher.enable
         end
 
         def migrate_categories
@@ -41,6 +46,7 @@ module Weblinc
 
           smart_categories.find.each do |category_doc|
             doc = category_doc.except('downcased_name', 'excluded_facets')
+            doc['slug'] = SecureRandom.hex(10) unless doc['deleted_at'].nil?
             categories.insert_one(doc)
           end
 
@@ -76,11 +82,17 @@ module Weblinc
             product_doc['categorizations'].each do |categorization_doc|
               existing = categories_to_save.detect { |c| c.id.to_s == categorization_doc['category_id'].to_s }
 
+              next if categorization_doc['category_id'].nil?
+
               category = if existing
                            existing
                          else
-                           categories_to_save << Catalog::Category.find(categorization_doc['category_id'])
-                           categories_to_save.last
+                           begin
+                             categories_to_save << Catalog::Category.find(categorization_doc['category_id'])
+                             categories_to_save.last
+                           rescue Mongoid::Errors::DocumentNotFound
+                             next
+                           end
                          end
 
               if categorization_doc['position'].present?
@@ -139,6 +151,11 @@ module Weblinc
             if order_doc['segment_ids'].present?
               segment_data[order_doc['number']] = order_doc['segment_ids']
             end
+            orders.update_one(
+              { _id: order_doc['_id'] },
+              '$unset' => { cancelled_at: '' },
+              '$set' => { canceled_at: order_doc['cancelled_at'] }
+            )
           end
 
           if segment_data.present?
@@ -162,7 +179,9 @@ module Weblinc
               '$unset' => {
                 "items.#{i}.product_details" => '',
                 "items.#{i}.sku_details" => '',
-                "items.#{i}.digital" => ''
+                "items.#{i}.digital" => '',
+                "items.#{i}.product_attributes.packaged_product_ids" => '',
+                "items.#{i}.product_attributes.categorizations" => ''
               }
             )
           end
@@ -217,6 +236,8 @@ module Weblinc
           warn "User permissions have changed. Former permissions data still available in the `weblinc_user_authorizations` collection. You will need to manually migrate those. Please see the v2.0 release notes at http://guides.weblinc.com/release-notes.html"
 
           users.find.each do |user_doc|
+            next if user_doc['passwords'].nil?
+
             passwords = user_doc['passwords'].sort do |a, b|
               a['created_at'] <=> b['created_at']
             end
@@ -240,6 +261,86 @@ module Weblinc
                 password_changed_at: current_password['created_at'],
               }
             )
+          end
+        end
+
+        def migrate_fulfillment
+          new_fulfillments = Fulfillment.collection
+
+          fulfillments = Mongoid::Clients.default.collections.detect do |c|
+            c.namespace.end_with?('weblinc_fulfillment_orders')
+          end
+
+          fulfillments.find.each do |fulfillment_doc|
+            fulfillment_doc['_id'] = fulfillment_doc.delete('number')
+
+            shipments_doc = fulfillment_doc.delete('shipments')
+            cancellations_doc = fulfillment_doc.delete('cancellations')
+            returns_doc = fulfillment_doc.delete('returns')
+
+            fulfillment_doc['items'].each do |item|
+              item.delete('quantity_cancelled')
+              item.delete('quantity_returned')
+              item.delete('quantity_shipped')
+
+              item['events'] ||= []
+
+              unless cancellations_doc.nil?
+                cancellations_for_item = for_order_item_id(cancellations_doc, item['order_item_id'])
+                cancellations_for_item.each do |cancellation|
+                  item['events'].push(
+                    id: BSON::ObjectId.new,
+                    status: 'canceled',
+                    quantity: cancellation['quantity'],
+                    created_at: cancellation['created_at'],
+                    updated_at: cancellation['updated_at']
+                  )
+                end
+              end
+
+              unless shipments_doc.nil?
+                shipments_doc.each do |shipment|
+                  shipment_items_for_item = for_order_item_id(shipment['items'], item['order_item_id'])
+                  next if shipment_items_for_item.blank?
+                  shipment_items_for_item.each do |sifi|
+                    item['events'].push(
+                      id: BSON::ObjectId.new,
+                      status: 'shipped',
+                      quantity: sifi['quantity'],
+                      data: {
+                        tracking_number: shipment['tracking_number']
+                      }
+                    )
+                  end
+                end
+              end
+
+              unless returns_doc.nil?
+                returns_for_item = for_order_item_id(returns_doc, item['order_item_id'])
+                returns_for_item.each do |rtrn|
+                  item['events'].push(
+                    id: BSON::ObjectId.new,
+                    status: 'returned',
+                    quantity: rtrn['quantity'],
+                    created_at: rtrn['created_at'],
+                    updated_at: rtrn['updated_at'],
+                    data: {
+                      reason_code: rtrn['reason_code']
+                    }
+                  )
+                end
+              end
+            end
+
+            new_fulfillments.insert_one(fulfillment_doc)
+          end
+        end
+
+        private
+
+        def for_order_item_id(docs, order_item_id)
+          docs.select do |doc|
+            doc['order_item_id'] == order_item_id
           end
         end
       end
