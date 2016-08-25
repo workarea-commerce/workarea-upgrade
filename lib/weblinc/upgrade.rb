@@ -1,3 +1,4 @@
+require 'active_support/core_ext/module/delegation'
 require 'weblinc'
 require 'weblinc/store_front'
 require 'weblinc/admin'
