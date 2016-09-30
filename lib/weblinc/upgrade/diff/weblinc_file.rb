@@ -10,7 +10,8 @@ module Weblinc
             .select do |relative|
               !File.directory?("#{root}/#{relative}") &&
                 !relative.include?('decorators/') &&
-                (relative.include?('app/') || relative.include?('lib/'))
+                (relative.include?('app/') || relative.include?('lib/')) &&
+                !relative.end_with?('.decorator')
             end
             .map { |relative| new(root, relative) }
         end
@@ -21,6 +22,10 @@ module Weblinc
             .map { |file| file.gsub(root, '') }
             .map { |file| file.gsub('/app/decorators', 'app') }
             .map { |file| file.gsub('_decorator.rb', '.rb') }
+            .map { |file| new(nil, file) } +
+          Dir.glob("#{root}/app/**/*.decorator")
+            .map { |file| file.gsub("#{root}/", '') }
+            .map { |file| file.gsub('.decorator', '.rb') }
             .map { |file| new(nil, file) }
         end
 
