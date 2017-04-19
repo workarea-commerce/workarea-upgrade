@@ -1,11 +1,11 @@
-module Weblinc
+module Workarea
   module Upgrade
     class CLI < Thor
       desc 'diff TO_VERSION', 'Output a diff for upgrading to TO_VERSION'
       option :plugins, type: :hash, aliases: :p, desc: 'Plugins and their upgrade versions to include, e.g. reviews:1.0.1 blog:1.0.0'
       option :format, type: :string, aliases: :f, enum: %w(text color html), default: 'color'
       option :context, type: :numeric, aliases: :c, desc: 'The number of lines of context that are shown around each change'
-      option :full, type: :boolean, desc: 'Output the full diff between the two weblinc verions (not just files customized in this project)'
+      option :full, type: :boolean, desc: 'Output the full diff between the two workarea verions (not just files customized in this project)'
       def diff(to)
         check_help!(to, 'diff')
         diff = Diff.new(to, options)
@@ -38,13 +38,13 @@ module Weblinc
       def report(to)
         check_help!(to, 'report')
         diff = Diff.new(to, options)
-        report_card = Weblinc::Upgrade::ReportCard.new(diff)
+        report_card = Workarea::Upgrade::ReportCard.new(diff)
 
         puts 'Diff Statistics'
         puts '---------------'
-        say_status '>>>', "#{pluralize(diff.all.length, 'file')} changed in weblinc", :yellow
-        say_status '---', "#{pluralize(diff.removed.length, 'file')} removed from weblinc", :red
-        say_status '+++', "#{pluralize(diff.added.length, 'file')} added to weblinc", :green
+        say_status '>>>', "#{pluralize(diff.all.length, 'file')} changed in workarea", :yellow
+        say_status '---', "#{pluralize(diff.removed.length, 'file')} removed from workarea", :red
+        say_status '+++', "#{pluralize(diff.added.length, 'file')} added to workarea", :green
         say_status '>>>', "#{pluralize(diff.overridden.length, 'overridden file')} in this app changed", :yellow
         say_status '>>>', "#{pluralize(diff.decorated.length, 'decorated file')} in this app changed", :yellow
 
@@ -83,10 +83,10 @@ module Weblinc
         puts 'Where do I go from here?'
         puts '------------------------'
         say_status 'Check out the release notes:', calculate_release_notes_url(to), :white
-        say_status 'View a diff for your project:', "weblinc_upgrade diff #{to} #{args}", :white
-        say_status 'View new files in weblinc:', "weblinc_upgrade show_added_files #{to} #{args}", :white
-        say_status 'View removed files in weblinc:', "weblinc_upgrade show_removed_files #{to} #{args}", :white
-        say_status 'Update your gem file:', "gem 'weblinc', '#{to}'", :white
+        say_status 'View a diff for your project:', "workarea_upgrade diff #{to} #{args}", :white
+        say_status 'View new files in workarea:', "workarea_upgrade show_added_files #{to} #{args}", :white
+        say_status 'View removed files in workarea:', "workarea_upgrade show_removed_files #{to} #{args}", :white
+        say_status 'Update your gem file:', "gem 'workarea', '#{to}'", :white
         puts
       end
 
@@ -98,14 +98,14 @@ module Weblinc
 
         if major < 2
           minor = version_pieces.second
-          "http://guides.weblinc.com/#{major}.#{minor}/release-notes.html"
+          "http://developer.weblinc.com/#{major}.#{minor}/release-notes.html"
         else
-          "http://guides.weblinc.com/#{major}/release-notes.html"
+          "http://developer.weblinc.com/#{major}/release-notes.html"
         end
       end
 
       def from_path
-        Bundler.load.specs.find { |s| s.name == 'weblinc' }.full_gem_path
+        Bundler.load.specs.find { |s| s.name =~ /weblinc|workarea/ }.full_gem_path
       end
 
       def check_help!(arg, subcommand)

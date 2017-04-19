@@ -1,4 +1,4 @@
-module Weblinc
+module Workarea
   module Upgrade
     class ReportCard
       CATEGORIES = %w(

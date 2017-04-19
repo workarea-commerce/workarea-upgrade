@@ -1,7 +1,14 @@
-module Weblinc
+module Workarea
   module Upgrade
     class Diff
-      CORE_GEM_NAMES = %w(weblinc-core weblinc-store_front weblinc-admin)
+      if WORKAREA_ALIASED
+        CORE_NAME = 'weblinc'
+        CORE_GEM_NAMES = %w(weblinc-core weblinc-store_front weblinc-admin)
+      else
+        CORE_NAME = 'workarea'
+        CORE_GEM_NAMES = %w(workarea-core workarea-storefront workarea-admin)
+      end
+
       CSS = <<-STYLE
         .diff{overflow:auto;}
         .diff ul{background:#fff;overflow:auto;font-size:13px;list-style:none;margin:0;padding:0;display:table;width:100%;}
@@ -51,7 +58,7 @@ module Weblinc
 
       def gems
         core = CORE_GEM_NAMES.inject({}) do |memo, gem|
-          memo[gem.gsub(/weblinc-/, '')] = @core_to_version
+          memo[gem.gsub(/#{CORE_NAME}-/, '')] = @core_to_version
           memo
         end
 
@@ -59,7 +66,7 @@ module Weblinc
       end
 
       def find_from_path!(gem)
-        Bundler.load.specs.find { |s| s.name == "weblinc-#{gem}" }.full_gem_path
+        Bundler.load.specs.find { |s| s.name =~ "#{CORE_NAME}-#{gem}" }.full_gem_path
       end
 
       def find_to_path!(gem, version)
@@ -67,14 +74,14 @@ module Weblinc
           raise "#{version} is not a valid version number. Example format: 2.0.3"
         end
 
-        result = "#{Gem.dir}/gems/weblinc-#{gem}-#{version}"
+        result = "#{Gem.dir}/gems/#{CORE_NAME}-#{gem}-#{version}"
 
         if !File.directory?(result)
           raise <<-eos.strip_heredoc
 
-            Couldn't find weblinc-#{gem} v#{version} in installed gems!
+            Couldn't find #{CORE_NAME}-#{gem} v#{version} in installed gems!
             Looked in #{result}
-            Try `gem install weblinc-#{gem} -v #{version}`.
+            Try `gem install #{CORE_NAME}-#{gem} -v #{version}`.
           eos
         end
 
