@@ -1,9 +1,9 @@
-module Weblinc
+module Workarea
   module Upgrade
     class Migration
       class V2 < Migration
         def perform
-          Weblinc::Publisher.disable
+          Workarea::Publisher.disable
           puts "Migrating category data..."
           migrate_categories
 
@@ -27,7 +27,10 @@ module Weblinc
 
           puts 'Migrating fulfillment orders...'
           migrate_fulfillment
-          Weblinc::Publisher.enable
+          Workarea::Publisher.enable
+
+          puts 'Migration email shares...'
+          clean_malformed_email_shares
         end
 
         def migrate_categories
@@ -188,7 +191,7 @@ module Weblinc
         end
 
         def migrate_discounts
-          new_discounts = Weblinc::Pricing::Discount.collection
+          new_discounts = Workarea::Pricing::Discount.collection
           compatibility_data = {}
 
           discounts = Mongoid::Clients.default.collections.detect do |collection|
@@ -217,7 +220,7 @@ module Weblinc
           end
 
           promo_codes.find.each do |promo_code_doc|
-            Weblinc::Pricing::Discount::GeneratedPromoCode.collection.insert_one(promo_code_doc)
+            Workarea::Pricing::Discount::GeneratedPromoCode.collection.insert_one(promo_code_doc)
           end
 
           redemptions = Mongoid::Clients.default.collections.detect do |collection|
@@ -225,12 +228,12 @@ module Weblinc
           end
 
           redemptions.find.each do |redemption_doc|
-            Weblinc::Pricing::Discount::Redemption.collection.insert_one(redemption_doc)
+            Workarea::Pricing::Discount::Redemption.collection.insert_one(redemption_doc)
           end
         end
 
         def migrate_users
-          users = Weblinc::User.collection
+          users = Workarea::User.collection
           users.indexes.drop_one('token_1')
 
           warn "User permissions have changed. Former permissions data still available in the `weblinc_user_authorizations` collection. You will need to manually migrate those. Please see the v2.0 release notes at http://guides.weblinc.com/release-notes.html"
@@ -333,6 +336,21 @@ module Weblinc
             end
 
             new_fulfillments.insert_one(fulfillment_doc)
+          end
+        end
+
+
+        def clean_malformed_email_shares
+          Workarea::Email::Share.module_eval do
+            def sanitize_url; end
+          end
+
+          Workarea::Email::Share.each do |share|
+            begin
+              URI.parse(share.url)
+            rescue URI::InvalidURIError
+              share.destroy!
+            end
           end
         end
 

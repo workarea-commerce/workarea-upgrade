@@ -8,7 +8,7 @@ require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new
 
 $LOAD_PATH.unshift File.expand_path('../lib', __FILE__)
-require 'weblinc/upgrade/version'
+require 'workarea/upgrade/version'
 
 desc 'Generate the changelog based on git history'
 task :changelog, :from, :to do |t, args|
@@ -18,7 +18,7 @@ task :changelog, :from, :to do |t, args|
   to = args[:to] || 'HEAD'
   log = `git log #{from}..#{to} --pretty=format:'%an|%B___'`
 
-  puts "WebLinc Upgrade #{Weblinc::Upgrade::VERSION} (#{Date.today})"
+  puts "Workarea Upgrade #{Workarea::Upgrade::VERSION} (#{Date.today})"
   puts '-' * 80
   puts
 
@@ -52,7 +52,7 @@ task :changelog, :from, :to do |t, args|
   end
 end
 
-desc "Release version #{Weblinc::Upgrade::VERSION} of the gem"
+desc "Release version #{Workarea::Upgrade::VERSION} of the gem"
 task :release do
   host = "https://#{ENV['BUNDLE_GEMS__WEBLINC__COM']}@gems.weblinc.com"
 
@@ -60,12 +60,10 @@ task :release do
   system 'echo "$(rake changelog)\n\n\n$(cat CHANGELOG.md)" > CHANGELOG.md'
   system 'git add CHANGELOG.md && git commit -m "Update changelog" && git push origin head'
 
-  system "git tag -a v#{Weblinc::Upgrade::VERSION} -m 'Tagging #{Weblinc::Upgrade::VERSION}'"
+  system "git tag -a v#{Workarea::Upgrade::VERSION} -m 'Tagging #{Workarea::Upgrade::VERSION}'"
   system 'git push --tags'
 
-  system "gem build weblinc-upgrade.gemspec"
-  system "gem push weblinc-upgrade-#{Weblinc::Upgrade::VERSION}.gem --host #{host}"
-  system "rm weblinc-upgrade-#{Weblinc::Upgrade::VERSION}.gem"
+  system "gem build workarea-upgrade.gemspec"
+  system "gem push workarea-upgrade-#{Workarea::Upgrade::VERSION}.gem --host #{host}"
+  system "rm workarea-upgrade-#{Workarea::Upgrade::VERSION}.gem"
 end
-
-

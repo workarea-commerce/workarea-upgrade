@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
-require 'weblinc/upgrade'
-require 'weblinc/upgrade/cli'
+require 'workarea/upgrade'
+require 'workarea/upgrade/cli'
 
 Weblinc::Upgrade::CLI.start(ARGV)

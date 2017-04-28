@@ -1,14 +1,14 @@
-WebLinc Upgrade
+Workarea Upgrade
 ================================================================================
 
-WebLinc Upgrade makes it easier to upgrade your application to use newer
-versions of WebLinc and WebLinc plugins. Use this plugin to:
+Workarea Upgrade makes it easier to upgrade your application to use newer
+versions of Workarea and Workarea plugins. Use this plugin to:
 
 * View a report to help you determine the effort required to upgrade.
 * Migrate your database.
-* Diff any two WebLinc versions (back to version 0.8.0) and filter the
+* Diff any two Workarea versions (back to version 0.8.0) and filter the
 results to show only the changes affecting your application.
-* View lists of files added and removed between versions of WebLinc.
+* View lists of files added and removed between versions of Workarea.
 
 
 Step 1: Install the Plugin
@@ -16,18 +16,18 @@ Step 1: Install the Plugin
 
 Add the plugin to your application's Gemfile:
 
-    gem 'weblinc-upgrade', source: 'https://gems.weblinc.com', group: 'development'
+    gem 'workarea-upgrade', source: 'https://gems.weblinc.com', group: 'development'
 
 Update your bundle. Use `bundle update` to get the latest version:
 
     cd path/to/your_app
-    bundle update weblinc-upgrade
+    bundle update workarea-upgrade
 
 
 Step 2: View Help
 --------------------------------------------------------------------------------
 
-Run `weblinc_upgrade` without arguments to view help:
+Run `workarea_upgrade` without arguments to view help:
 
     cd path/to/your_app
     bundle exec weblinc_upgrade
@@ -47,7 +47,7 @@ Step 4: View Report & Begin Upgrade
 --------------------------------------------------------------------------------
 
 Start by viewing an upgrade report. The report will summarize the work required
-to upgrade to specific versions of WebLinc and WebLinc plugins.
+to upgrade to specific versions of Workarea and Workarea plugins.
 
 The report will suggest next steps for your upgrade.
 
@@ -55,21 +55,22 @@ The report will suggest next steps for your upgrade.
 Step 5: Migrate Your Database
 --------------------------------------------------------------------------------
 
-If upgrading to a major or minor version of WebLinc, a database migration may
+If upgrading to a major or minor version of Workarea, a database migration may
 be available.
 
-First, update your bundle to use the newer version of WebLinc and use the tools
+First, update your bundle to use the newer version of Workarea and use the tools
 described above to help achieve compatibility with the newer version.
 
 Then run the database migration:
 
     cd path/to/your_app
-    bin/rake weblinc:upgrade:migration
+    bin/rake workarea:upgrade:migration
 
+[See more information on migrating from version 2 to 3](/v3_database_migration.md)
 
 Copyright & Licensing
 --------------------------------------------------------------------------------
 
-Copyright WebLinc 2016. All rights reserved.
+Copyright Weblinc 2017. All rights reserved.
 
-For licensing, contact sales@weblinc.com.
+For licensing, contact sales@workarea.com.

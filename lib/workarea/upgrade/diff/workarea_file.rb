@@ -1,7 +1,7 @@
-module Weblinc
+module Workarea
   module Upgrade
     class Diff
-      class WeblincFile
+      class WorkareaFile
         attr_reader :relative_path
 
         def self.find_files(root)

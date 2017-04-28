@@ -1,4 +1,4 @@
-module Weblinc
+module Workarea
   module Upgrade
     class Migration
       class MigrationNotAvailable < StandardError; end
@@ -10,7 +10,7 @@ module Weblinc
       field :error, type: String
 
       def self.lookup(version)
-        "Weblinc::Upgrade::Migration::V#{version}"
+        "Workarea::Upgrade::Migration::V#{version}"
           .constantize
           .new
 

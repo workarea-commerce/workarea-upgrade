@@ -1,4 +1,4 @@
-module Weblinc
+module Workarea
   module Upgrade
     class Diff
       class GemDiff
@@ -53,11 +53,11 @@ module Weblinc
         end
 
         def from_files
-          @from_files ||= WeblincFile.find_files(@from_root)
+          @from_files ||= WorkareaFile.find_files(@from_root)
         end
 
         def to_files
-          @to_files ||= WeblincFile.find_files(@to_root)
+          @to_files ||= WorkareaFile.find_files(@to_root)
         end
 
         private

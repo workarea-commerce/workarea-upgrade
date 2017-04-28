@@ -12,9 +12,3 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
-
-
-gem 'weblinc', source: 'https://gems.weblinc.com'
-group :test do
-  gem 'weblinc-testing', source: 'https://gems.weblinc.com'
-end
