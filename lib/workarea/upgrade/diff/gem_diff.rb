@@ -73,10 +73,12 @@ module Workarea
         end
 
         def find_from_file(relative_path)
+          relative_path = relative_path.gsub('workarea', 'weblinc') if @options[:transition]
           from_files.detect { |file| file.relative_path == relative_path }
         end
 
         def find_to_file(relative_path)
+          relative_path = relative_path.gsub('weblinc', 'workarea') if @options[:transition]
           to_files.detect { |file| file.relative_path == relative_path }
         end
 
