@@ -64,9 +64,9 @@ described above to help achieve compatibility with the newer version.
 Then run the database migration:
 
     cd path/to/your_app
-    bin/rake workarea:upgrade:migration
+    bin/rake workarea:upgrade:migrate
 
-[See more information on migrating from version 2 to 3](/v3_database_migration.md)
+[See more information on migrating from version 2 to 3](v3_database_migration.md)
 
 Copyright & Licensing
 --------------------------------------------------------------------------------
