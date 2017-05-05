@@ -1,3 +1,17 @@
+Workarea Upgrade 2.0.0 (2017-05-05)
+--------------------------------------------------------------------------------
+
+*   Allow workarea gems to be diffed with weblinc gems
+
+    UPGRADE-16
+    Matt Duffy
+
+*   Create v3 database migration script
+
+    UPGRADE-15
+    Matt Duffy
+
+
 WebLinc Upgrade 1.1.0 (2016-10-12)
 --------------------------------------------------------------------------------
 
