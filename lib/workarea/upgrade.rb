@@ -18,6 +18,7 @@ require 'thor'
 require 'diffy'
 require 'fileutils'
 require 'bundler'
+require 'rake'
 
 require 'workarea/upgrade/engine'
 
