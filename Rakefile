@@ -55,7 +55,7 @@ task :release do
 
   system 'touch CHANGELOG.md'
   system 'echo "$(rake changelog)\n\n\n$(cat CHANGELOG.md)" > CHANGELOG.md'
-  system 'git add CHANGELOG.md && git commit -m "Update changelog" && git push origin head'
+  system 'git add CHANGELOG.md && git commit -m "Update changelog" && git push origin HEAD'
 
   system "git tag -a v#{Workarea::Upgrade::VERSION} -m 'Tagging #{Workarea::Upgrade::VERSION}'"
   system 'git push --tags'
