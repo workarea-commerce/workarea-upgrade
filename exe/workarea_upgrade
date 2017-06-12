@@ -4,4 +4,4 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '..', 'lib')
 require 'workarea/upgrade'
 require 'workarea/upgrade/cli'
 
-Weblinc::Upgrade::CLI.start(ARGV)
+Workarea::Upgrade::CLI.start(ARGV)
