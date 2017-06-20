@@ -120,7 +120,7 @@ module Workarea
         def update_products
           collection = Workarea::Catalog::Product.collection
 
-        persist_document_changes(collection) do |product_doc|
+          persist_document_changes(collection) do |product_doc|
             product_doc['purchasable'] = (
               (
                 product_doc['purchase_starts_at'].blank? ||
@@ -134,9 +134,12 @@ module Workarea
 
             product_doc.delete('purchase_starts_at')
             product_doc.delete('purchase_ends_at')
+            product_doc.delete('meta_keywords')
 
-            product_doc['variants'].each do |variant_doc|
+            Array.wrap(product_doc['variants']).each do |variant_doc|
               variant_doc['active'] = true
+              variant_doc.delete('purchase_starts_at')
+              variant_doc.delete('purchase_ends_at')
             end
 
             update_commentable_fields(product_doc)
@@ -152,6 +155,8 @@ module Workarea
 
           persist_document_changes(collection) do |content_doc|
             update_commentable_fields(content_doc)
+
+            content_doc.delete('meta_keywords')
 
             content_doc['contentable_type'] =
               content_doc['contentable_type'].try(:sub, 'Weblinc', 'Workarea')
@@ -270,9 +275,12 @@ module Workarea
         end
 
         def update_orders
+          Workarea::Order.remove_indexes
           collection = Workarea::Order.collection
 
           persist_document_changes(collection) do |order_doc|
+            next if order_doc['number'].nil?
+
             order_doc['_id'] = order_doc.delete('number')
             update_commentable_fields(order_doc)
 
@@ -317,7 +325,7 @@ module Workarea
             sku_doc.delete('sale_ends_at')
             sku_doc['active'] = true
 
-            sku_doc['prices'].each do |price_doc|
+            Array.wrap(sku_doc['prices']).each do |price_doc|
               price_doc['active'] = true
             end
           end
