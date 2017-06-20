@@ -1,3 +1,29 @@
+Workarea Upgrade 2.0.1 (2017-06-20)
+--------------------------------------------------------------------------------
+
+*   Fix issues with v3 migration script
+
+    - Handle Products without variants
+    - Handle Pricing::Sku without prices
+    - Handle indexing orders after changing IDs
+    - Remove purchase dates from variants
+    - Remove meta_keywords from products and content
+    - Check order number presence to prevent looping through new documents
+
+    UPGRADE-20
+    Matt Duffy
+
+*   Modify diffing logic to allow diff between v3 versions
+
+    UPGRADE-19
+    Matt Duffy
+
+*   Remove incorrect reference to Weblinc constant
+
+    UPGRADE-18
+    Matt Duffy
+
+
 Workarea Upgrade 2.0.0 (2017-05-05)
 --------------------------------------------------------------------------------
 
