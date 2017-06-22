@@ -30,12 +30,12 @@ Step 2: View Help
 Run `workarea_upgrade` without arguments to view help:
 
     cd path/to/your_app
-    bundle exec weblinc_upgrade
+    bundle exec workarea_upgrade
 
 Use `help` to get detailed help for a specific command:
 
     cd path/to/your_app
-    bundle exec weblinc_upgrade help report
+    bundle exec workarea_upgrade help report
 
 Step 3: Install Target Gems
 --------------------------------------------------------------------------------
