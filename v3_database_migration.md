@@ -17,6 +17,8 @@ The database migration for v3 provides as much automated data migration as possi
 
 * Product purchase dates and Pricing Sku sale dates are removed. Workarea v2 products have purchase_starts_at and purchase_ends_at, and Inventory Skus have sale_starts_at and sale_ends_at. These were removed in v3 in favor of a boolean field, purchasable and on_sale respectively, allowing the use of the existing release system to control this behavior. The migration will set the field based on the current date in relation to the old dates. This does result in data loss that will need to be accounted for when migrating from v2.
 
+* Shipping::Item no longer exists, and are archived during the database migration. If you need to access this data you may do so from the workarea_shippings_items_archived collection. Each document has the order id it was associated to and the items associated with each shipping. 
+
 It is recommended you review the migration script and modify as needed based on the needs and customization of your project specifically. This is not a one-size-fits-all migration and will not work for any and all projects. We provide this as a starting point of a v2 base to v3 base migration.
 
 0. Update your application for v3 compatibility.

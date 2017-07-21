@@ -70,7 +70,6 @@ module Workarea
           puts 'Migrating shipping...'
           rename_shipping_shipment
           update_shipping
-          # remove_shipping_items
           rename_shipping_method
           update_shipping_services
 
@@ -412,6 +411,11 @@ module Workarea
 
             address_doc = shipping_doc['address']
             address_doc['_type'] = 'Workarea::Shipping::Address' if address_doc.present?
+
+            @client["#{collection.name}_items_archived"].insert_one(
+              order_id: shipping_doc['order_id'],
+              items: shipping_doc.delete('items')
+            )
           end
         end
 
