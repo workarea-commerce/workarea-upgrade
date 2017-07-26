@@ -246,7 +246,9 @@ module Workarea
           persist_document_changes(collection) do |taxon_doc|
             taxon_doc['navigable_type'] = taxon_doc.delete('linkable_type').try(:sub, 'Weblinc', 'Workarea')
             taxon_doc['navigable_id'] = taxon_doc.delete('linkable_id')
+            taxon_doc['navigable_slug'] = taxon_doc.delete('linkable_slug')
             taxon_doc.delete('sales_score')
+            taxon_doc.delete('previous_sales_score')
             taxon_doc.delete('search')
           end
         end
