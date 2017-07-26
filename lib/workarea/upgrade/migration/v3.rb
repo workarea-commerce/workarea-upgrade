@@ -104,8 +104,8 @@ module Workarea
           collection = Workarea::Catalog::Category.collection
 
           persist_document_changes(collection) do |category_doc|
-            category_doc['term_facets'] = category_doc.delete('term_facets')
-            category_doc['range_facets'] = category_doc.delete('range_facets')
+            category_doc['term_facets'] = category_doc.delete('filters')
+            category_doc['range_facets'] = category_doc.delete('range_filters')
             update_commentable_fields(category_doc)
 
             Array.wrap(category_doc['rules']).each do |rule_doc|
