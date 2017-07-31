@@ -104,8 +104,8 @@ module Workarea
           collection = Workarea::Catalog::Category.collection
 
           persist_document_changes(collection) do |category_doc|
-            category_doc['term_facets'] = category_doc.delete('term_facets')
-            category_doc['range_facets'] = category_doc.delete('range_facets')
+            category_doc['term_facets'] = category_doc.delete('filters')
+            category_doc['range_facets'] = category_doc.delete('range_filters')
             update_commentable_fields(category_doc)
 
             Array.wrap(category_doc['rules']).each do |rule_doc|
@@ -246,7 +246,9 @@ module Workarea
           persist_document_changes(collection) do |taxon_doc|
             taxon_doc['navigable_type'] = taxon_doc.delete('linkable_type').try(:sub, 'Weblinc', 'Workarea')
             taxon_doc['navigable_id'] = taxon_doc.delete('linkable_id')
+            taxon_doc['navigable_slug'] = taxon_doc.delete('linkable_slug')
             taxon_doc.delete('sales_score')
+            taxon_doc.delete('previous_sales_score')
             taxon_doc.delete('search')
           end
         end
@@ -282,11 +284,34 @@ module Workarea
 
             order_doc['_id'] = order_doc.delete('number')
             update_commentable_fields(order_doc)
+            update_order_items(order_doc['items'])
+          end
+        end
 
-            Array.wrap(order_doc['items']).each do |item_doc|
-              Array.wrap(item_doc['price_adjustments']).each do |adjustment_doc|
-                adjustment_doc['calculator'] =
-                  adjustment_doc['calculator'].try(:sub, 'Weblinc', 'Workarea')
+        def update_order_items(items)
+          Array.wrap(items).each do |item_doc|
+            item_doc.delete('contributes_to_shipping')
+
+            Array.wrap(item_doc['price_adjustments']).each do |adjustment_doc|
+              adjustment_doc['calculator'] =
+                adjustment_doc['calculator'].try(:sub, 'Weblinc', 'Workarea')
+            end
+
+            if item_doc['product_attributes'].present?
+              attr_doc = item_doc['product_attributes']
+
+              attr_doc.delete('meta_keywords')
+
+              # Localization is not present in V2 order item product attributes
+              attr_doc['details'] = { 'en' => attr_doc['details'] }
+              attr_doc['filters'] = { 'en' => attr_doc['filters'] }
+              attr_doc['description'] = { 'en' => attr_doc['description'] }
+              attr_doc['name'] = { 'en' => attr_doc['name'] }
+              attr_doc['browser_title'] = { 'en' => attr_doc['browser_title'] }
+
+              Array.wrap(attr_doc['variants']).each do |variant_doc|
+                variant_doc['details'] = { 'en' => variant_doc['details'] }
+                variant_doc['name'] = { 'en' => variant_doc['name'] }
               end
             end
           end
