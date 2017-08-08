@@ -1,3 +1,22 @@
+Workarea Upgrade 2.0.3 (2017-08-08)
+--------------------------------------------------------------------------------
+
+*   Add additional changes to taxon fields
+
+    UPGRADE-23
+    Matt Duffy
+
+*   Fix facet field names for categories in v3 migration
+
+    UPGRADE-23
+    Matt Duffy
+
+*   Properly migrate order item product hashes from v2 to v3
+
+    UPGRADE-23
+    Matt Duffy
+
+
 Workarea Upgrade 2.0.2 (2017-07-25)
 --------------------------------------------------------------------------------
 
