@@ -68,7 +68,7 @@ module Workarea
       end
 
       def find_to_path!(gem, version)
-        unless version.to_s =~ /^(\d+\.)(\d+\.)(\d+)$/
+        unless version.to_s =~ /^(\d+\.)(\d+\.)(\d+)/
           raise "#{version} is not a valid version number. Example format: 3.0.5"
         end
 
