@@ -1,3 +1,12 @@
+Workarea Upgrade 2.0.4 (2017-09-06)
+--------------------------------------------------------------------------------
+
+*   Loosen version pattern to allow upgrading to beta releases
+
+    UPGRADE-24
+    Curt Howard
+
+
 Workarea Upgrade 2.0.3 (2017-08-08)
 --------------------------------------------------------------------------------
 
