@@ -27,6 +27,7 @@ module Workarea
           update_content
           remove_content_block_types
           update_content_assets
+          update_content_presets
           update_pages
 
           puts 'Migrating comments...'
@@ -192,6 +193,15 @@ module Workarea
 
           persist_document_changes(collection) do |asset_doc|
             update_commentable_fields(asset_doc)
+          end
+        end
+
+        def update_content_presets
+          collection = Workarea::Content::Preset.collection
+
+          persist_document_changes(collection) do |preset_doc|
+            preset_doc['type_id'] = 'text' if preset_doc['type_id'] == 'rich_text'
+            update_content_block_data(preset_doc['data'], preset_doc['type_id'])
           end
         end
 
