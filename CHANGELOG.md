@@ -1,3 +1,14 @@
+Workarea Upgrade 2.0.6 (2018-02-06)
+--------------------------------------------------------------------------------
+
+*   Rename term_facets to terms_facets
+
+    Fixes issue where v2.x filters are being migrated into the wrong place.
+
+    UPGRADE-25
+    Tom Scott
+
+
 Workarea Upgrade 2.0.5 (2018-01-23)
 --------------------------------------------------------------------------------
 
