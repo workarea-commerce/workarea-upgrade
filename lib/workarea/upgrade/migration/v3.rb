@@ -586,9 +586,20 @@ module Workarea
         end
 
         def find_asset_from_url(url)
-          Workarea::Content::Asset.all.detect do |asset|
-            url[asset.url].present?
-          end.try(:id) || Workarea::Content::BlockType.find(:hero).defaults[:asset]
+          Workarea::Content::Asset.asc(:updated_at).detect do |asset|
+            file_names_match?(url, asset.url)
+          end.try(:id) || default_content_asset
+        end
+
+        def default_content_asset
+          Workarea::Content::BlockType.find(:hero).defaults[:asset]
+        end
+
+        def file_names_match?(given_url, asset_url)
+          given = URI.parse(given_url).path.split('/').last
+          asset = URI.parse(asset_url).path.split('/').last
+
+          given == asset
         end
       end
     end
