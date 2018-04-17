@@ -1,3 +1,25 @@
+Workarea Upgrade 2.0.7 (2018-04-17)
+--------------------------------------------------------------------------------
+
+*   Leverage Workarea Changelog task
+
+    ECOMMERCE-5355
+    Curt Howard
+
+*   Migrate dragonfly assets to v3.x cleanly
+
+    When v2.x clients use the v3 migration script, none of their content
+    assets can be found because the job ID has changed as we upgraded the
+    Dragonfly library. When upgrading Dragonfly assets, try to find an asset
+    match by the filename of the image rather than the entire asset URL.
+    This isn't 100% perfect because we don't validate uniqueness on content
+    asset filenames, but it should get us most of the way there.
+
+    UPGRADE-30
+    Tom Scott
+
+
+
 Workarea Upgrade 2.0.6 (2018-02-06)
 --------------------------------------------------------------------------------
 
