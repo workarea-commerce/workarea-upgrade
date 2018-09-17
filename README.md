@@ -18,6 +18,10 @@ Add the plugin to your application's Gemfile:
 
     gem 'workarea-upgrade', source: 'https://gems.weblinc.com', group: 'development'
 
+**NOTE:** If you are using `weblinc-modernizr-rails`, remove it from
+your Gemfile. This will cause a conflict in the upgrade engine, and is
+not required for Workarea v3.x.
+
 Update your bundle. Use `bundle update` to get the latest version:
 
     cd path/to/your_app
