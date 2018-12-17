@@ -2,7 +2,12 @@ Workarea Upgrade
 ================================================================================
 
 Workarea Upgrade makes it easier to upgrade your application to use newer
-versions of Workarea and Workarea plugins. Use this plugin to:
+versions of Workarea and Workarea plugins. 
+
+This plugin should be used to take each patch, minor, or major version of the
+Workarea platform and/or any of its plugins.
+
+Use this plugin to:
 
 * View a report to help you determine the effort required to upgrade.
 * Migrate your database.
@@ -71,6 +76,78 @@ Then run the database migration:
     bin/rake workarea:upgrade:migrate
 
 [See more information on migrating from version 2 to 3](docs/guides/migrating-a-database-from-v2-to-v3.html)
+
+Tips & Recommendations
+--------------------------------------------------------------------------------
+
+## Strive to stay up to date
+
+New versions of the Workarea platform and its plugins are being released every
+two weeks, on average. Taking these patches as they are released is paramount
+to lessening the cognitive and financial impact of a larger upgrade later down
+the road.
+
+Some patches even contain very important security updates from upstream gems 
+on which the platform depends.
+
+There should be very little reason not to take any and all patch versions. By
+design, these releases represent the least amount of change and greatly increase
+the stability of your project.
+
+If you wish to receive an announcement via email each time a release is made,
+please email <choward@workarea.com> to be added to the release announcement
+mailing list.
+
+## Upgrading out of date projects
+
+For many reasons projects become out of date. If you are trying to upgrade your 
+project to the latest patch in your current minor version, you can do so using 
+the Upgrade Plugin as well.
+
+This step is especially important when trying to upgrade your project beyond
+your current minor version. 
+
+Imagine the following scenario:
+
+* Your project is on version `3.0.5`
+* The latest patch on the v3.0 minor is `3.0.20`
+* The latest patch on the v3.1 minor is `3.1.25`
+* The absolute latest version of the platform is `3.2.30`
+* You want your project to be on the absolute latest version of the platform
+
+This means that you're going to have to upgrade from the v3.0 minor through the 
+v3.1 minor to the v3.2 minor.
+
+__Note:__ The upgrade should be performed in a branch separate from your main
+development branch so that you can push after each step. This will allow the CI
+server to pick up the changes and run the test suite on each step. Manual
+testing is also suggested to make sure no visual bugs are introduced.
+
+Using the example above, the prescribed method for upgrading would be to use the
+Upgrade Plugin to upgrade your project from:
+
+1. `3.0.5` to `3.0.20`
+1. `3.0.20` to `3.1.25`
+1. `3.1.25` to `3.2.30`
+
+This will yield diffs containing the least amount of change possible, due to the 
+way the product's patches are handled internally.
+
+## Diff Results
+
+The visual diffs that are produced by this plugin apply to any overridden or 
+decorated file within your project. The visual diff _displays changes between
+the two versions of the platform file only_. This means that you, as the
+developer, should have a general awareness of why the file in your project was
+overridden and how it was customized. This just means that the diff shows you
+what has changed at the platform level and its up to you, the developer, to 
+apply those changes to your project accordingly.
+
+All diffs should be regarded as important with the exception of SCSS changes. 
+Since there will rarely be a bug introduced in the Stylesheets that will be 
+applicable to your project, these files can be generally disregarded during the
+upgrade. Most project heavily customize the styles to satisfy the needs of the 
+client and stray far away from the platform's default look-and-feel as a result.
 
 Copyright & Licensing
 --------------------------------------------------------------------------------
