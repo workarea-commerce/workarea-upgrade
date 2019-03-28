@@ -50,7 +50,8 @@ Step 3: Install Target Gems
 --------------------------------------------------------------------------------
 
 Install each Gem that you will be upgrading to.
-gem install example-gem -v UPGRADE_VERSION
+
+    gem install example-gem -v UPGRADE_VERSION
 
 Step 4: View Report & Begin Upgrade
 --------------------------------------------------------------------------------
@@ -60,6 +61,7 @@ to upgrade to specific versions of Workarea and Workarea plugins.
 
 The report will suggest next steps for your upgrade.
 
+    bundle exec workarea_upgrade report 3.4.1
 
 Step 5: Migrate Your Database
 --------------------------------------------------------------------------------
@@ -148,6 +150,27 @@ Since there will rarely be a bug introduced in the Stylesheets that will be
 applicable to your project, these files can be generally disregarded during the
 upgrade. Most project heavily customize the styles to satisfy the needs of the 
 client and stray far away from the platform's default look-and-feel as a result.
+
+## Upgrading Theme Plugins
+
+Though themes are technically plugins, they are a special type of plugin that 
+overrides views the same way an app would. Because of this fact they can also
+be upgraded in the same way as an app.
+
+However, due to the permissive way plugins depend on the `workarea` gem, before 
+you begin the upgrade process, you must first set your dependency within the 
+theme's gemspec more pessimistically. 
+
+As an example, version 1.0.0 of the Clifton theme was created during Workarea's
+v3.3 release life cycle, which means that the views overridden into this theme
+closely resemble those released in v3.3.0. Following this example, we are trying
+to release this theme's next minor version, 1.1.0, which will be compatible with 
+Workarea 3.4.0.
+
+Before completing Step 1, above, by changing the Workarea dependency within the 
+plugin's gemfile from `~> 3.x` to `3.3.0` before running a `bundle update`, the
+upgrade then is allowed to function properly as though we are upgrading a real
+app.
 
 Copyright & Licensing
 --------------------------------------------------------------------------------
