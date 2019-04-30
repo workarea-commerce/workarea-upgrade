@@ -1,3 +1,16 @@
+Workarea Upgrade 2.0.9 (2019-04-30)
+--------------------------------------------------------------------------------
+
+*   Update README
+
+    * General improvements
+    * Add a note about upgrading themes
+
+    UPGRADE-35
+    Curt Howard
+
+
+
 Workarea Upgrade 2.0.8 (2019-04-30)
 --------------------------------------------------------------------------------
 
