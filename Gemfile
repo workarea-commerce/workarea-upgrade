@@ -13,4 +13,4 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
-gem 'workarea', '>= 3.2.0'
+gem 'workarea', '>= 3.2.0', source: 'https://gems.weblinc.com'

@@ -34,7 +34,7 @@ module Workarea
           GemDiff.new(
             from_path,
             to_path,
-            @options.merge(transition: transitioning_to_workarea?)
+            @options
           )
         end
       end
@@ -54,17 +54,17 @@ module Workarea
       end
 
       def gems
-        core = core_gem_names.inject({}) do |memo, gem|
-          memo[gem.split('-').last] = @core_to_version
-          memo
-        end
+        core = %w(workarea-core workarea-storefront workarea-admin)
+          .inject({}) do |memo, gem|
+            memo[gem] = @core_to_version
+            memo
+          end
 
         core.merge(plugins)
       end
 
       def find_from_path!(gem)
-        gem = 'store_front' if gem == 'storefront' && transitioning_to_workarea?
-        Bundler.load.specs.find { |s| s.name == "#{from_name}-#{gem}" }.full_gem_path
+        Bundler.load.specs.find { |s| s.name == "#{gem}" }.full_gem_path
       end
 
       def find_to_path!(gem, version)
@@ -72,56 +72,18 @@ module Workarea
           raise "#{version} is not a valid version number. Example format: 3.0.5"
         end
 
-        result = "#{Gem.dir}/gems/#{to_name}-#{gem}-#{version}"
+        result = "#{Gem.dir}/gems/#{gem}-#{version}"
 
         if !File.directory?(result)
           raise <<-eos.strip_heredoc
 
-            Couldn't find #{to_name}-#{gem} v#{version} in installed gems!
+            Couldn't find #{gem} v#{version} in installed gems!
             Looked in #{result}
-            Try `gem install #{to_name}-#{gem} -v #{version}`.
+            Try `gem install #{gem} -v #{version}`.
           eos
         end
 
         result
-      end
-
-      def core_gem_names
-        @core_gem_names ||=
-          if workarea_upgrade?
-            %w(workarea-core workarea-storefront workarea-admin)
-          else
-            %w(weblinc-core weblinc-store_front weblinc-admin)
-          end
-      end
-
-      def from_name
-        @from_name ||=
-          if weblinc_upgrade? || transitioning_to_workarea?
-            'weblinc'
-          else
-            'workarea'
-          end
-      end
-
-      def to_name
-        @to_name ||= workarea_upgrade? ? 'workarea' : 'weblinc'
-      end
-
-      def weblinc_upgrade?
-        @weblinc_upgrade ||= @core_to_version.to_s.split('.').first.to_i < 3
-      end
-
-      def workarea_upgrade?
-        @workarea_upgrade ||= @core_to_version.to_s.split('.').first.to_i >= 3
-      end
-
-      # If the version is 3+ and a weblinc gem is still found, we can reliably say
-      # this is a diff between v2 and v3.
-      def transitioning_to_workarea?
-        @transitioning_to_workarea ||=
-          workarea_upgrade? &&
-          Bundler.load.specs.any? { |s| s.name =~ /^weblinc/ }
       end
     end
   end
