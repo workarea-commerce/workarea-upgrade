@@ -23,10 +23,6 @@ Add the plugin to your application's Gemfile:
 
     gem 'workarea-upgrade', source: 'https://gems.weblinc.com', group: 'development'
 
-**NOTE:** If you are using `weblinc-modernizr-rails`, remove it from
-your Gemfile. This will cause a conflict in the upgrade engine, and is
-not required for Workarea v3.x.
-
 Update your bundle. Use `bundle update` to get the latest version:
 
     cd path/to/your_app
@@ -63,22 +59,6 @@ The report will suggest next steps for your upgrade.
 
     bundle exec workarea_upgrade report 3.4.1
 
-Step 5: Migrate Your Database
---------------------------------------------------------------------------------
-
-If upgrading to a major or minor version of Workarea, a database migration may
-be available.
-
-First, update your bundle to use the newer version of Workarea and use the tools
-described above to help achieve compatibility with the newer version.
-
-Then run the database migration:
-
-    cd path/to/your_app
-    bin/rake workarea:upgrade:migrate
-
-[See more information on migrating from version 2 to 3](docs/guides/migrating-a-database-from-v2-to-v3.html)
-
 Tips & Recommendations
 --------------------------------------------------------------------------------
 
@@ -99,6 +79,9 @@ the stability of your project.
 If you wish to receive an announcement via email each time a release is made,
 please email <choward@workarea.com> to be added to the release announcement
 mailing list.
+
+Alternatively you can run the `workarea_upgrade check` command periodically to 
+check for new versions from the command line.
 
 ## Upgrading out of date projects
 
