@@ -139,6 +139,10 @@ module Workarea
         puts '###############'
 
         puts
+        puts "* View a full diff of all files that will be impacted by this upgrade:"
+        puts "  $ bundle exec workarea_upgrade diff"
+
+        puts
         puts "* Replace your Gemfile and Gemfile.lock with the new versions:"
         puts "  $ mv Gemfile.next Gemfile"
         puts "  $ mv Gemfile.next.lock Gemfile.lock"
@@ -150,10 +154,6 @@ module Workarea
         puts
         puts "* If you're upgrading to a new minor be sure to read the appropriate Upgrade Guide:"
         puts "  https://developer.workarea.com/upgrade-guides.html"
-
-        puts
-        puts "* View a full diff of all files that will be impacted by this upgrade:"
-        puts "  $ bundle exec workarea_upgrade diff"
       end
 
       desc 'diff', 'Output a diff of changes that will affect your project'
