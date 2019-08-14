@@ -1,162 +1,142 @@
-Workarea Upgrade
-================================================================================
+# Workarea Upgrade 
 
-Workarea Upgrade makes it easier to upgrade your application to use newer
-versions of Workarea and Workarea plugins. 
+A plugin for upgrading to newer versions of Workarea and its plugins.
 
-This plugin should be used to take each patch, minor, or major version of the
-Workarea platform and/or any of its plugins.
+## Overview
 
-Use this plugin to:
+* Used for upgrading to new patches, minors, or majors
+* View a report of the complexity of the upgrade
+* Diff code change between any two version of Workarea in the v3 series 
+* See results relevant to the overridden or decorated files in your application
 
-* View a report to help you determine the effort required to upgrade.
-* Migrate your database.
-* Diff any two Workarea versions (back to version 0.8.0) and filter the
-results to show only the changes affecting your application.
-* View lists of files added and removed between versions of Workarea.
+## Features
 
+* __Command Line Interface__
+  
+  The features of this plugin are accessibile by invoking the `workarea_upgrade`
+  command. After installing this plugin run `bundle exec workarea_upgrade help`
+  for an overview of which commands are available to you.
 
-Step 1: Install the Plugin
---------------------------------------------------------------------------------
+* __Upgrade Preparation__
+  
+  The Upgrade plugin uses the differences found between your `Gemfile` and a 
+  `Gemfile.next` file present in your application's root directory to generate
+  its reporting and diffing functionality. You can create and manage this 
+  `Gemfile.next` yourself or use the `prepare` task to automate its creation.
 
-Add the plugin to your application's Gemfile:
+* __Reporting__
 
-    gem 'workarea-upgrade', source: 'https://gems.weblinc.com', group: 'development'
+  To get an idea of how complex your upgrade will be the Upgrade gem provides
+  a `report` task which shows basic statistics about the amount of change the 
+  Workarea platform has undergone between versions listed in your `Gemfile` and
+  `Gemfile.next`. These statistics should give you a general idea of how much 
+  work may be required to perform the upgrade.
+
+* __Diffing__
+ 
+ The Upgrade plugin will display a full diff of changes made to Workarea as they
+ pertain to your application. If you've overridden or decorated any core 
+ Workarea file or a file from a Workarea plugin the Upgrade gem will show you
+ the change to that file between the versions specified in your `Gemfile` and 
+ `Gemfile.next`. Use this information to upgrade your application accordingly.
+
+## Getting Started
+
+### Installation
+
+Add the plugin to your application's `Gemfile`:
+
+    group :development do
+      gem 'workarea-upgrade', '>= 3.0.0', source: 'https://gems.workarea.com'
+    end
 
 Update your bundle. Use `bundle update` to get the latest version:
 
     cd path/to/your_app
     bundle update workarea-upgrade
 
+### View Help
 
-Step 2: View Help
---------------------------------------------------------------------------------
+Run `workarea_upgrade help` for an overview of the commands and what they do:
 
-Run `workarea_upgrade` without arguments to view help:
+    bundle exec workarea_upgrade help
 
-    cd path/to/your_app
-    bundle exec workarea_upgrade
+Run `workarea_upgrade help TASK` to get more information about a given task:
 
-Use `help` to get detailed help for a specific command:
-
-    cd path/to/your_app
     bundle exec workarea_upgrade help report
 
-Step 3: Install Target Gems
---------------------------------------------------------------------------------
+### Create a Gemfile.next
 
-Install each Gem that you will be upgrading to.
+The Upgrade plugin uses a `Gemfile.next` file in your application's root
+directory to determine the versions you wish to upgrade to.
 
-    gem install example-gem -v UPGRADE_VERSION
+This file may be created manually, by copying and modifying your `Gemfile` as a
+`Gemfile.next` file, or automatically, by running:
 
-Step 4: View Report & Begin Upgrade
---------------------------------------------------------------------------------
+    bundle exec workarea_upgrade
 
-Start by viewing an upgrade report. The report will summarize the work required
-to upgrade to specific versions of Workarea and Workarea plugins.
+This will drop you into a wizard that will determine the newest versions of each
+of your Workarea gems and iterate over them, allowing you to add, remove, or 
+modify the version of each gem found. These choices are used to generate the 
+`Gemfile.next` file for you automatically. 
 
-The report will suggest next steps for your upgrade.
+Once the process is complete the `Gemfile.next` will be tested for installation.
+If it fails installation you will be given instructions on how to fix it
+manually until it is in an installable state.
 
-    bundle exec workarea_upgrade report 3.4.1
+### View Report
 
-Tips & Recommendations
---------------------------------------------------------------------------------
+Once the `Gemfile.next` file is installable, you may get an idea of the
+complexity of your upgrade by viewing the report:
 
-## Strive to stay up to date
+    bundle exec workarea_upgrade report
 
-New versions of the Workarea platform and its plugins are being released every
-two weeks, on average. Taking these patches as they are released is paramount
-to lessening the cognitive and financial impact of a larger upgrade later down
-the road.
+### View Diffs
 
-Some patches even contain very important security updates from upstream gems 
-on which the platform depends.
+Finally, view the actual changes that have occurred to any Workarea gems you 
+have installed with:
 
-There should be very little reason not to take any and all patch versions. By
-design, these releases represent the least amount of change and greatly increase
-the stability of your project.
+    bundle exec workarea_upgrade diff
 
-If you wish to receive an announcement via email each time a release is made,
-please email <choward@workarea.com> to be added to the release announcement
-mailing list.
+The output of this command will be limited to the files that have been 
+overridden or decorated in your application only, as its these files that will
+not automatically receive the updates from the core platform. Use this output
+to make informed decisions about how your application will need to change to 
+stay up to date.
 
-Alternatively you can run the `workarea_upgrade check` command periodically to 
-check for new versions from the command line.
+You may also view a list of all files added or removed between each version 
+by running either:
 
-## Upgrading out of date projects
+    bundle exec workarea_upgrade diff --added # or
+    bundle exec workarea_upgrade diff --removed
 
-For many reasons projects become out of date. If you are trying to upgrade your 
-project to the latest patch in your current minor version, you can do so using 
-the Upgrade Plugin as well.
+View `bundle exec workarea_upgrade help diff` for more ways you can format these
+results.
 
-This step is especially important when trying to upgrade your project beyond
-your current minor version. 
+### Copy Gemfile.next to Gemfile
 
-Imagine the following scenario:
+Once all of the updates have been applied to your application, move the
+`Gemfile.next` files over to replace your `Gemfile` files:
 
-* Your project is on version `3.0.5`
-* The latest patch on the v3.0 minor is `3.0.20`
-* The latest patch on the v3.1 minor is `3.1.25`
-* The absolute latest version of the platform is `3.2.30`
-* You want your project to be on the absolute latest version of the platform
+    mv Gemfile.next Gemfile
+    mv Gemfile.next.lock Gemfile.lock
 
-This means that you're going to have to upgrade from the v3.0 minor through the 
-v3.1 minor to the v3.2 minor.
+### Test
 
-__Note:__ The upgrade should be performed in a branch separate from your main
-development branch so that you can push after each step. This will allow the CI
-server to pick up the changes and run the test suite on each step. Manual
-testing is also suggested to make sure no visual bugs are introduced.
+Lastly you should run your test suite to ensure all of the tests pass:
 
-Using the example above, the prescribed method for upgrading would be to use the
-Upgrade Plugin to upgrade your project from:
+    bin/rails workarea:test
 
-1. `3.0.5` to `3.0.20`
-1. `3.0.20` to `3.1.25`
-1. `3.1.25` to `3.2.30`
+Once the tests pass, deploy your upgrade to your QA environment for real user
+testing.
 
-This will yield diffs containing the least amount of change possible, due to the 
-way the product's patches are handled internally.
+## More Information
 
-## Diff Results
+Please visit 
+<https://developer.workarea.com/articles/upgrading-your-application.html> for a
+more comprehensive overview of how to use this plugin.
 
-The visual diffs that are produced by this plugin apply to any overridden or 
-decorated file within your project. The visual diff _displays changes between
-the two versions of the platform file only_. This means that you, as the
-developer, should have a general awareness of why the file in your project was
-overridden and how it was customized. This just means that the diff shows you
-what has changed at the platform level and its up to you, the developer, to 
-apply those changes to your project accordingly.
-
-All diffs should be regarded as important with the exception of SCSS changes. 
-Since there will rarely be a bug introduced in the Stylesheets that will be 
-applicable to your project, these files can be generally disregarded during the
-upgrade. Most project heavily customize the styles to satisfy the needs of the 
-client and stray far away from the platform's default look-and-feel as a result.
-
-## Upgrading Theme Plugins
-
-Though themes are technically plugins, they are a special type of plugin that 
-overrides views the same way an app would. Because of this fact they can also
-be upgraded in the same way as an app.
-
-However, due to the permissive way plugins depend on the `workarea` gem, before 
-you begin the upgrade process, you must first set your dependency within the 
-theme's gemspec more pessimistically. 
-
-As an example, version 1.0.0 of the Clifton theme was created during Workarea's
-v3.3 release life cycle, which means that the views overridden into this theme
-closely resemble those released in v3.3.0. Following this example, we are trying
-to release this theme's next minor version, 1.1.0, which will be compatible with 
-Workarea 3.4.0.
-
-Before completing Step 1, above, by changing the Workarea dependency within the 
-plugin's gemfile from `~> 3.x` to `3.3.0` before running a `bundle update`, the
-upgrade then is allowed to function properly as though we are upgrading a real
-app.
-
-Copyright & Licensing
---------------------------------------------------------------------------------
+# Copyright & Licensing
 
 Copyright Weblinc 2017. All rights reserved.
 
