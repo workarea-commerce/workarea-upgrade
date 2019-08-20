@@ -239,7 +239,7 @@ module Workarea
         while done.casecmp?('n')
           say "\nYou can [C]ontinue, [s]kip, or enter a new version number:"
 
-          gems = gemfile.outdated.reduce([]) do |memo, gem|
+          gems = gemfile.outdated.each_with_object([]) do |gem, memo|
             choice = ask(" * #{gem.first} (#{gem.last})", :yellow)
 
             next if choice.casecmp?('s')
@@ -249,8 +249,6 @@ module Workarea
             else
               memo << [gem.first, choice]
             end
-
-            memo
           end
 
           if gems.nil?
