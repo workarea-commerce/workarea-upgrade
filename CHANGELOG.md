@@ -1,21 +1,3 @@
-Workarea Upgrade 3.0.0 (2019-09-17)
---------------------------------------------------------------------------------
-
-*   Overhaul Upgrade Plugin
-
-    * Add version checking functionality
-    * Remove Migrations. Now they live in base.
-    * Remove references to `weblinc`. Only support v3+.
-    * Add Gemfile.next support
-    * Clean up API and plugin flow
-    * Consolodate Diff-based tasks
-    * Remove useless output from Breakdown report
-
-    UPGRADE-36
-    Curt Howard
-
-
-
 Workarea Upgrade 2.0.9 (2019-04-30)
 --------------------------------------------------------------------------------
 
