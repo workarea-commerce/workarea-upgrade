@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'http://www.workarea.com'
   s.summary     = 'Workarea upgrade tools'
   s.description = 'Upgrade tools for the Workarea commerce system'
-  s.files       = `git ls-files`.split('\n')
+  s.files       = `git ls-files`.split("\n")
   s.bindir      = 'exe'
   s.executable  = 'workarea_upgrade'
 
