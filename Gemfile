@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+git_source(:github) { |repo| "git@github.com:#{repo}.git" }
 
 # Declare your gem's dependencies in upgrade.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and
@@ -13,4 +14,4 @@ gemspec
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
 
-gem 'workarea', '>= 3.2.0', source: 'https://gems.weblinc.com'
+gem 'workarea', '>= 3.2.0'

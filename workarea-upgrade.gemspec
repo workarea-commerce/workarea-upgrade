@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = Workarea::Upgrade::VERSION
   s.authors     = ['Ben Crouse', 'Curt Howard']
   s.email       = ['bcrouse@workarea.com', 'choward@workarea.com']
-  s.homepage    = 'http://www.workarea.com'
+  s.homepage    = 'https://github.com/workarea-commerce/workarea-upgrade'
   s.summary     = 'Workarea upgrade tools'
   s.description = 'Upgrade tools for the Workarea commerce system'
   s.files       = `git ls-files`.split("\n")
