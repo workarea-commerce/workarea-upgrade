@@ -1,3 +1,24 @@
+Workarea Upgrade 3.0.1 (2019-10-16)
+--------------------------------------------------------------------------------
+
+*   Fix Error on Startup
+
+    Make sure ActiveSupport is required so that methods like `#present?`
+    will be defined on all objects.
+
+    UPGRADE-39
+    Tom Scott
+
+*   Remove workflow
+
+    Matt Duffy
+
+*   Migrate to Github
+
+    Matt Duffy
+
+
+
 Workarea Upgrade 3.0.0 (2019-09-17)
 --------------------------------------------------------------------------------
 
