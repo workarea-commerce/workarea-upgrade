@@ -130,6 +130,73 @@ Lastly you should run your test suite to ensure all of the tests pass:
 Once the tests pass, deploy your upgrade to your QA environment for real user
 testing.
 
+### Upgrading Themes
+
+Themes, by nature, are structured differently than host applications. The main
+difference is that themes list their dependencies in a `gemspec` instead of a 
+`Gemfile`. Secondly, they are more permissive in their dependencies, since they
+are intended to "just work" for all patches within a dependency's minor version
+or, in some cases, all minors and patches within a dependency's major version.
+
+```rb
+# snipped from the NVY Theme's gemspec
+
+s.add_dependency 'workarea', '~> 3.4.x'                                       
+s.add_dependency 'workarea-theme', '~> 1.1.1'                                 
+                                                                              
+s.add_dependency 'workarea-blog', '~> 3.x', '>= 3.3.0'                        
+s.add_dependency 'workarea-gift_cards', '~> 3.x', '>= 3.4.0'                  
+s.add_dependency 'workarea-product_quickview', '~> 2.0.2'                     
+s.add_dependency 'workarea-reviews', '~> 3.x'                                 
+s.add_dependency 'workarea-share', '~> 1.x', '>= 1.2.0'                       
+s.add_dependency 'workarea-swatches', '~> 1.x'                                
+s.add_dependency 'workarea-styled_selects', '~> 1.x'                          
+s.add_dependency 'workarea-slick_slider', '~> 1.x'                            
+s.add_dependency 'workarea-wish_lists', '>= 2.1.0' 
+```
+
+```rb
+# snipped from the NVY theme's Gemfile
+
+gem 'workarea', github: 'workarea-commerce/workarea'
+```
+
+In order to use the `workarea_upgrade` command effectively within the context
+of a theme you will need to _temporarily create entries in the theme's Gemfile_
+effectively fixing the theme's dependencies to a known version before proceeding
+with the upgrade.
+
+Doing this is fairly straightforward. It's best to glean the fixed dependency
+versions from the gemspec directly. Using the example above we can safely assume
+the adjusted Gemfile should look something like this:
+
+```rb
+gem 'workarea', '3.4.0'
+gem 'workarea-blog', '3.3.0'
+gem 'workarea-gift_cards', '3.4.0'
+gem 'workarea-product_quickview', '2.0.2'
+gem 'workarea-reviews', '3.0.0'
+gem 'workarea-share', '1.2.0'
+gem 'workarea-swatches', '1.0.0'
+gem 'workarea-styled_selects', '1.0.0'
+gem 'workarea-slick_slider', '1.0.0'
+gem 'workarea-wish_lists', '2.1.0'
+
+# Don't forget to include workarea-upgrade either
+gem 'workarea-upgrade', source: 'https://gems.workarea.com'
+```
+
+Running `bundle exec workarea_upgrade` at this point should work as expected.
+
+Once you've finished going through the generated diff and applying all of the
+changes, don't forget to
+
+1. revert the changes you made to your Gemfile
+1. update your gemspec to point to the new versions you've upgraded to
+1. delete your Gemfile.next and Gemfile.next.lock files
+1. run a bundle install to check that the dependencies are correct
+1. run your tests
+
 ## More Information
 
 Please visit 
