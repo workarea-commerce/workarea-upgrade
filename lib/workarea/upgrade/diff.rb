@@ -29,6 +29,7 @@ module Workarea
       def gem_diffs
         @gem_diffs ||= gems.map do |gem, to_version|
           from_path = find_from_path!(gem)
+          next unless from_path.present?
           to_path = find_to_path!(gem, to_version)
 
           GemDiff.new(
@@ -64,7 +65,7 @@ module Workarea
       end
 
       def find_from_path!(gem)
-        Bundler.load.specs.find { |s| s.name == "#{gem}" }.full_gem_path
+        Bundler.load.specs.find { |s| s.name == "#{gem}" }&.full_gem_path
       end
 
       def find_to_path!(gem, version)
