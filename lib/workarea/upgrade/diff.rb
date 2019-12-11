@@ -54,17 +54,14 @@ module Workarea
       end
 
       def gems
-        core = %w(workarea-core workarea-storefront workarea-admin)
-          .inject({}) do |memo, gem|
-            memo[gem] = @core_to_version
-            memo
-          end
-
-        core.merge(plugins)
+        %w(workarea-core workarea-storefront workarea-admin)
+          .each_with_object({}) { |gem, memo| memo[gem] = @core_to_version }
+          .merge(plugins)
+          .select { |gem, _version| find_from_path!(gem).present? }
       end
 
       def find_from_path!(gem)
-        Bundler.load.specs.find { |s| s.name == "#{gem}" }.full_gem_path
+        Bundler.load.specs.find { |s| s.name == "#{gem}" }&.full_gem_path
       end
 
       def find_to_path!(gem, version)
