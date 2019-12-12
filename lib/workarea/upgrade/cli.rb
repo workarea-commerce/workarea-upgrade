@@ -36,12 +36,12 @@ module Workarea
             say "\nLooks like you're ready to upgrade!", :green
             say 'Try running another command, like "diff" or "report":'
             puts
-            invoke 'help'
+            invoke :help, [], {}
             exit(0)
           else
             remove_file 'Gemfile.next'
             remove_file 'Gemfile.next.lock'
-            invoke :prepare
+            invoke :prepare, [], {}
           end
         elsif gemfile_next.lockfile_exist?
           remove_file 'Gemfile.next.lock'
@@ -69,7 +69,7 @@ module Workarea
         end
 
         if gemfile_next.check_install
-          invoke :report
+          invoke :report, [], {}
         else
           say "\nOh noes! Your Gemfile.next failed to install!", :red
 
@@ -229,7 +229,7 @@ module Workarea
         unless gemfile_next.exist?
           say "\nGemfile.next was not found in #{Dir.pwd}", :red
           say 'Preparing your application for upgrade...'
-          invoke :prepare
+          invoke :prepare, [], {}
         end
       end
 
