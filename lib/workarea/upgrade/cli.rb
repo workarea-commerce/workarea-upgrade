@@ -106,7 +106,7 @@ module Workarea
 
         diff = Diff.new(
           gemfile_next.workarea_version,
-          plugins: gemfile_next.plugins(gems_to_ignore).to_h
+          options.merge(plugins: gemfile_next.plugins(gems_to_ignore).to_h)
         )
 
         report = Report.new(diff)
@@ -195,7 +195,7 @@ module Workarea
 
         diff = Diff.new(
           gemfile_next.workarea_version,
-          plugins: gemfile_next.plugins(gems_to_ignore).to_h
+          options.merge(plugins: gemfile_next.plugins(gems_to_ignore).to_h)
         )
 
         if options[:added]
