@@ -1,3 +1,41 @@
+Workarea Upgrade 3.0.2 (2019-12-17)
+--------------------------------------------------------------------------------
+
+*   Pass supplied options to Diff
+
+    Diffy formatting wasn't working due to a blunder in the way we were
+    supplying options to Diffy::Diff
+
+    UPGRADE-3
+    Curt Howard
+
+*   Fix invocation bug when running `workarea_upgrade prepare -l`
+
+    The `--latest` option breaks the `prepare` -> `report` invocation chain
+    in the CLI. This fix passes empty hashes around to all invocations used
+    in the CLI.
+
+    UPGRADE-5
+    Curt Howard
+
+*   Avoid Method Errors When Upgrading New Gems
+
+    When a new gem has been included in an upgrading gem's dependencies, an
+    error can be thrown when viewing the diff or report if the gem is not
+    already included in the app's Gemfile prior to running the upgrade
+    tools. Ensure that `Workarea::Upgrade::Diff#find_from_path!` returns
+    `nil` when this occurs, and the diff generator skips over gems that it
+    cannot produce a `Workarea::Upgrade::GemDiff` for.
+
+    UPGRADE-7
+    Tom Scott
+
+*   Add theme upgrade notes to README
+
+    Curt Howard
+
+
+
 Workarea Upgrade 3.0.1 (2019-10-16)
 --------------------------------------------------------------------------------
 
