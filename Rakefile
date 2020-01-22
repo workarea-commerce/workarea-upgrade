@@ -24,6 +24,7 @@ task :release do
   system 'git push origin HEAD --follow-tags'
 
   system "gem build workarea-upgrade.gemspec"
+  system "gem push workarea-upgrade-#{Workarea::Upgrade::VERSION}.gem #{host}"
   system "gem push workarea-upgrade-#{Workarea::Upgrade::VERSION}.gem --host #{host}"
   system "rm workarea-upgrade-#{Workarea::Upgrade::VERSION}.gem"
 end
