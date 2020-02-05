@@ -1,3 +1,16 @@
+Workarea Upgrade 3.0.3 (2020-02-05)
+--------------------------------------------------------------------------------
+
+*   Loosen Bundler Version Constraint
+
+    Allow any version of Bundler 2 to be used with `Workarea::Upgrade` so
+    that users can install the right version on their apps.
+
+    UPGRADE-8
+    Tom Scott
+
+
+
 Workarea Upgrade 3.0.2 (2019-12-17)
 --------------------------------------------------------------------------------
 
