@@ -1,3 +1,17 @@
+Workarea Upgrade 3.0.4 (2020-06-30)
+--------------------------------------------------------------------------------
+
+*   Fix incomplete Rails environment (#7)
+
+    Ran in to an issue where running this would throw an error about a missing ActionView constant.
+    Found reports of the same error in other rails-adjacent projects where part of the base rails
+    libraries weren't getting loaded or were loading in the wrong order. Explicitly pulling in
+    the ActionView railtie here seems to have fixed the problem.
+
+    Brad Thompson
+
+
+
 Workarea Upgrade 3.0.3 (2020-02-05)
 --------------------------------------------------------------------------------
 
