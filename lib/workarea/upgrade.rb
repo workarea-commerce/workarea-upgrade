@@ -1,4 +1,5 @@
 require 'active_support/all'
+require 'action_view/railtie'
 
 require 'workarea'
 require 'workarea/storefront'
