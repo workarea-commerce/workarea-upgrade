@@ -197,11 +197,6 @@ changes, don't forget to
 1. run a bundle install to check that the dependencies are correct
 1. run your tests
 
-## More Information
-
-Please visit 
-<https://developer.workarea.com/articles/upgrading-your-application.html> for a
-more comprehensive overview of how to use this plugin.
 
 # Copyright & Licensing
 
